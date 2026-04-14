@@ -1,8 +1,4 @@
-﻿import Link from "next/link";
-import Image from "next/image";
-import { promises as fs } from "fs";
-import path from "path";
-import { and, asc, eq, isNull } from "drizzle-orm";
+﻿import { and, asc, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { classes, students } from "@/db/schema";
 import {
@@ -12,25 +8,11 @@ import {
   verifyStudentPassword,
 } from "@/lib/student-auth";
 import LoginForm from "@/components/book/LoginForm";
+import BooksCatalog from "../../components/book/BooksCatalog";
 
 type SearchParams = Promise<{
   error?: string;
 }>;
-
-type BookMeta = {
-  title?: string;
-  description?: string;
-  thumbnail?: string;
-  order?: number;
-};
-
-type BookItem = {
-  bookId: string;
-  title: string;
-  description: string;
-  thumbnail: string | null;
-  order: number;
-};
 
 type LoginActionResult = {
   ok: boolean;
@@ -42,10 +24,6 @@ type ClassOption = {
   name: string;
 };
 
-function formatBookTitle(bookId: string): string {
-  return bookId.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
-}
-
 function formatLoginError(error?: string): string | null {
   switch ((error ?? "").trim()) {
     case "missing":
@@ -54,60 +32,6 @@ function formatLoginError(error?: string): string | null {
       return "ログイン情報が一致しません。";
     default:
       return null;
-  }
-}
-
-async function readBookMeta(bookDir: string): Promise<BookMeta | null> {
-  const metaPath = path.join(bookDir, "meta.json");
-
-  try {
-    const raw = await fs.readFile(metaPath, "utf-8");
-    return JSON.parse(raw) as BookMeta;
-  } catch {
-    return null;
-  }
-}
-
-async function loadBooksFromPublic(): Promise<BookItem[]> {
-  const booksDir = path.join(process.cwd(), "public", "book-assets");
-
-  try {
-    const entries = await fs.readdir(booksDir, { withFileTypes: true });
-
-    const bookDirs = entries.filter(
-      (entry) => entry.isDirectory() && entry.name !== "pics"
-    );
-
-    const books = await Promise.all(
-      bookDirs.map(async (entry, index) => {
-        const bookId = entry.name;
-        const meta = await readBookMeta(path.join(booksDir, bookId));
-
-        const thumbnail =
-          meta?.thumbnail?.trim() || `/book-assets/pics/${bookId}.png`;
-
-        return {
-          bookId,
-          title: meta?.title?.trim() || formatBookTitle(bookId),
-          description: meta?.description?.trim() || "教材を開きます。",
-          thumbnail,
-          order:
-            typeof meta?.order === "number" && Number.isFinite(meta.order)
-              ? meta.order
-              : 100000 + index,
-        };
-      })
-    );
-
-    books.sort((a, b) => {
-      if (a.order !== b.order) return a.order - b.order;
-      return a.bookId.localeCompare(b.bookId, "ja");
-    });
-
-    return books;
-  } catch (error) {
-    console.error("public/book-assets の読み込みに失敗しました:", error);
-    return [];
   }
 }
 
@@ -203,7 +127,6 @@ export default async function BooksPage(props: {
     await clearStudentSession();
   }
 
-  const books = await loadBooksFromPublic();
   const loginClasses = session ? [] : await loadLoginClasses();
 
   return (
@@ -273,64 +196,7 @@ export default async function BooksPage(props: {
             </section>
           )}
 
-          <section className="space-y-4">
-            <div className="flex items-end justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-slate-900">教材を選ぶ</h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  閲覧したい教材を選んでください。
-                </p>
-              </div>
-            </div>
-
-            {books.length === 0 ? (
-              <section className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
-                表示できる教材フォルダがありません。
-              </section>
-            ) : (
-              <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {books.map((book) => (
-                  <Link
-                    key={book.bookId}
-                    href={`/books/${book.bookId}`}
-                    className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow"
-                  >
-                    {book.thumbnail ? (
-                      <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100">
-                        <Image
-                          src={book.thumbnail}
-                          alt={book.title}
-                          fill
-                          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
-                          className="object-cover transition group-hover:scale-[1.02]"
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex aspect-[16/9] w-full items-center justify-center bg-slate-100 text-sm font-bold text-slate-400">
-                        NO IMAGE
-                      </div>
-                    )}
-
-                    <div className="space-y-2 p-5">
-                      <div className="text-lg font-bold text-slate-900">
-                        {book.title}
-                      </div>
-
-                      <div className="text-xs text-slate-500">{book.bookId}</div>
-
-                      <div className="line-clamp-2 text-sm text-slate-600">
-                        {book.description}
-                      </div>
-
-                      <div className="pt-2 text-xs font-bold text-slate-500 transition group-hover:text-slate-700">
-                        開く →
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </section>
-            )}
-          </section>
+          <BooksCatalog />
         </div>
       </div>
     </main>
