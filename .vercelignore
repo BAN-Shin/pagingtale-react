@@ -2,8 +2,8 @@
 _page_manager_backups/
 
 # 動画
-# *.mp4
-# *.mov
+*.mp4
+*.mov
 
 # ローカル素材
 # public/book-assets/**/mov/
