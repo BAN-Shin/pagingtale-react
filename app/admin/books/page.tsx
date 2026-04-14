@@ -1,21 +1,19 @@
-﻿import Link from "next/link";
-import Image from "next/image";
-import { promises as fs } from "fs";
-import path from "path";
+﻿"use client";
 
-type BookMeta = {
-  title?: string;
-  description?: string;
-  thumbnail?: string;
-  order?: number;
-};
+import Link from "next/link";
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 
 type BookItem = {
   bookId: string;
-  title: string;
-  description: string;
-  thumbnail: string | null;
-  order: number;
+  title?: string;
+  description?: string;
+  thumbnail?: string | null;
+  order?: number;
+};
+
+type BooksManifest = {
+  books?: BookItem[];
 };
 
 function formatBookTitle(bookId: string): string {
@@ -25,61 +23,173 @@ function formatBookTitle(bookId: string): string {
     .trim();
 }
 
-async function readBookMeta(bookDir: string): Promise<BookMeta | null> {
-  const metaPath = path.join(bookDir, "meta.json");
+function normalizeBooks(value: unknown): BookItem[] {
+  if (!value || typeof value !== "object") return [];
 
-  try {
-    const raw = await fs.readFile(metaPath, "utf-8");
-    const parsed = JSON.parse(raw) as BookMeta;
-    return parsed;
-  } catch {
-    return null;
-  }
-}
+  const raw = value as BooksManifest;
+  if (!Array.isArray(raw.books)) return [];
 
-async function loadBooksFromPublic(): Promise<BookItem[]> {
-  const booksDir = path.join(process.cwd(), "public", "book-assets");
+  return raw.books
+    .filter((item): item is BookItem => {
+      return !!item && typeof item === "object" && typeof item.bookId === "string";
+    })
+    .map((item, index) => {
+      const bookId = item.bookId.trim();
 
-  try {
-    const entries = await fs.readdir(booksDir, { withFileTypes: true });
+      return {
+        bookId,
+        title:
+          typeof item.title === "string" && item.title.trim()
+            ? item.title.trim()
+            : formatBookTitle(bookId),
+        description:
+          typeof item.description === "string" && item.description.trim()
+            ? item.description.trim()
+            : "教材を開きます。",
+        thumbnail:
+          typeof item.thumbnail === "string" && item.thumbnail.trim()
+            ? item.thumbnail.trim()
+            : `/book-assets/pics/${bookId}.png`,
+        order:
+          typeof item.order === "number" && Number.isFinite(item.order)
+            ? item.order
+            : 100000 + index,
+      };
+    })
+    .sort((a, b) => {
+      const orderA =
+        typeof a.order === "number" && Number.isFinite(a.order) ? a.order : 100000;
+      const orderB =
+        typeof b.order === "number" && Number.isFinite(b.order) ? b.order : 100000;
 
-    const bookDirs = entries.filter(
-      (entry) => entry.isDirectory() && entry.name !== "pics"
-    );
-
-    const books = await Promise.all(
-      bookDirs.map(async (entry, index) => {
-        const bookId = entry.name;
-        const bookDir = path.join(booksDir, bookId);
-        const meta = await readBookMeta(bookDir);
-
-        return {
-          bookId,
-          title: meta?.title?.trim() || formatBookTitle(bookId),
-          description: meta?.description?.trim() || "教材を開きます。",
-          thumbnail: meta?.thumbnail?.trim() || null,
-          order:
-            typeof meta?.order === "number" && Number.isFinite(meta.order)
-              ? meta.order
-              : 100000 + index,
-        };
-      })
-    );
-
-    books.sort((a, b) => {
-      if (a.order !== b.order) return a.order - b.order;
+      if (orderA !== orderB) return orderA - orderB;
       return a.bookId.localeCompare(b.bookId, "ja");
     });
-
-    return books;
-  } catch (error) {
-    console.error("public/book-assets 読み込み失敗:", error);
-    return [];
-  }
 }
 
-export default async function AdminBooksPage() {
-  const books = await loadBooksFromPublic();
+export default function AdminBooksPage() {
+  const [books, setBooks] = useState<BookItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadBooks() {
+      try {
+        setIsLoading(true);
+        setLoadError(null);
+
+        const response = await fetch("/book-assets/books.json", {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error("book-assets/books.json の読み込みに失敗しました。");
+        }
+
+        const json = (await response.json()) as unknown;
+        const safeBooks = normalizeBooks(json);
+
+        if (cancelled) return;
+        setBooks(safeBooks);
+      } catch (error) {
+        if (cancelled) return;
+
+        console.error("book-assets/books.json 読み込み失敗:", error);
+        setBooks([]);
+        setLoadError(
+          error instanceof Error
+            ? error.message
+            : "教材一覧の読み込みに失敗しました。"
+        );
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadBooks();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const content = useMemo(() => {
+    if (isLoading) {
+      return (
+        <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500">
+          教材一覧を読み込み中です…
+        </div>
+      );
+    }
+
+    if (loadError) {
+      return (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
+          <div className="font-bold">教材一覧の読み込みに失敗しました。</div>
+          <div className="mt-2 break-all">{loadError}</div>
+          <div className="mt-3 text-xs text-rose-600">
+            public\book-assets\books.json を確認してください。
+          </div>
+        </div>
+      );
+    }
+
+    if (books.length === 0) {
+      return (
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+          教材一覧がありません。public\book-assets\books.json を用意してください。
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {books.map((book) => (
+          <Link
+            key={book.bookId}
+            href={`/books/${book.bookId}`}
+            className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow"
+          >
+            {book.thumbnail ? (
+              <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100">
+                <Image
+                  src={book.thumbnail}
+                  alt={book.title ?? book.bookId}
+                  fill
+                  sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
+                  className="object-cover transition group-hover:scale-[1.02]"
+                />
+              </div>
+            ) : (
+              <div className="flex aspect-[16/9] w-full items-center justify-center bg-slate-100 text-sm font-bold text-slate-400">
+                NO IMAGE
+              </div>
+            )}
+
+            <div className="space-y-2 p-5">
+              <div className="text-lg font-bold text-slate-900">
+                {book.title ?? formatBookTitle(book.bookId)}
+              </div>
+
+              <div className="text-xs text-slate-500">{book.bookId}</div>
+
+              <div className="line-clamp-2 text-sm text-slate-600">
+                {book.description ?? "教材を開きます。"}
+              </div>
+
+              <div className="pt-2 text-xs font-bold text-slate-500 transition group-hover:text-slate-700">
+                教材を開く →
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    );
+  }, [books, isLoading, loadError]);
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-6">
@@ -88,7 +198,7 @@ export default async function AdminBooksPage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">教材一覧（管理）</h1>
             <p className="mt-2 text-sm text-slate-600">
-              public\book-assets 配下の教材フォルダを表示しています。pics は除外しています。
+              public\book-assets\books.json をもとに教材一覧を表示します。
             </p>
           </div>
 
@@ -100,52 +210,7 @@ export default async function AdminBooksPage() {
           </Link>
         </div>
 
-        {books.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
-            教材フォルダが見つかりません
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {books.map((book) => (
-              <Link
-                key={book.bookId}
-                href={`/books/${book.bookId}`}
-                className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow"
-              >
-                {book.thumbnail ? (
-                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100">
-                    <Image
-                      src={book.thumbnail}
-                      alt={book.title}
-                      fill
-                      className="object-cover transition group-hover:scale-[1.02]"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex aspect-[16/9] w-full items-center justify-center bg-slate-100 text-sm font-bold text-slate-400">
-                    NO IMAGE
-                  </div>
-                )}
-
-                <div className="space-y-2 p-5">
-                  <div className="text-lg font-bold text-slate-900">
-                    {book.title}
-                  </div>
-
-                  <div className="text-xs text-slate-500">{book.bookId}</div>
-
-                  <div className="line-clamp-2 text-sm text-slate-600">
-                    {book.description}
-                  </div>
-
-                  <div className="pt-2 text-xs font-bold text-slate-500 transition group-hover:text-slate-700">
-                    教材を開く →
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+        {content}
       </div>
     </main>
   );
