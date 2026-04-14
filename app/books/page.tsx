@@ -302,7 +302,6 @@ export default async function BooksPage(props: {
                           alt={book.title}
                           fill
                           sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
-                          loading="eager"
                           className="object-cover transition group-hover:scale-[1.02]"
                         />
                       </div>
