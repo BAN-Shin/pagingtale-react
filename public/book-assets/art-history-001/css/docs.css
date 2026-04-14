@@ -1,0 +1,387 @@
+/* Docs original */
+
+body{
+	margin:0;
+	padding:0;
+	overflow:hidden;
+}
+
+iframe{
+	border: none;
+	overflow: hidden;
+}
+
+/* #canvas{ */
+	/* width: 960px;
+	height: 600px; */
+	/* width: 1022px;
+	height: 740px; */
+	/* width: 1116px;
+	height: 820px;
+	margin: 20px auto; */
+	/* background-color: aqua; */
+/* } */
+
+#canvas {
+    height: 90vh;
+    width: calc(90vh * (1116 / 820));
+	/* width: 1116px;
+	height: 820px; */
+	margin: 20px auto;
+    box-sizing: border-box;
+}
+
+/* #btnOn{
+	margin-left: 10px;
+	width: 70px;
+}
+#btnOff{
+	margin-left: 10px;
+	width: 70px;
+} */
+
+.buttonContainer {
+    /* display: flex;
+    align-items: center; */
+	display: flex;
+    flex-direction: row; /* 横並び */
+    /* justify-content: space-between; */
+    align-items: center;
+	/* background-color: aquamarine; */
+    gap: 10px; /* アイテム間のスペース */
+}
+
+/* 各要素に適度なマージンやパディングを追加 */
+.buttonContainer img, .buttonContainer input, .buttonContainer button, .buttonContainer div {
+    margin: 0px;
+}
+
+/* 画面幅が1200px以下のとき、縦並びに切り替える */
+@media screen and (max-width: 1800px) {
+    .buttonContainer {
+        flex-direction: column; /* 縦並びに切り替え */
+		position: absolute; /* 絶対位置 */
+        bottom: 10px; /* 下から10pxの余白 */
+        left: 10px; /* 左から10pxの余白 */
+		align-items: flex-start; /* 左揃えを維持 */
+		/* background-color:brown; */
+        /* align-items: center; 各要素を中央に配置 */
+    }
+
+    .buttonContainer img, .buttonContainer input, .buttonContainer button, .buttonContainer div {
+        width: 80%; /* 各要素の幅を調整（任意） */
+		margin: 0px;
+    }
+}
+
+/* 小さなディスプレイに対するスタイル (JavaScriptで適用) */
+.small-display .buttonContainer {
+    position: relative; /* 必要に応じて調整 */
+    bottom: auto; /* 必要に応じて変更 */
+    left: auto;
+    padding: 20px;
+}
+
+
+.buttonContainer img{
+    margin-right: 10px; /* ボタン間のスペース */
+}
+
+#musicOn{
+	margin-left: 10px;
+	width: 38px;
+}
+
+#musicOff{
+	margin-left: 10px;
+	width: 38px;
+}
+
+#myTextbox{
+    margin-right: 10px; /* ボタン間のスペース */
+}
+
+#myButton{
+    margin-right: 15px; /* ボタン間のスペース */
+}
+
+#clickableDiv{
+	width: 10px;
+	height: 10px;
+	background-color: #3F3631;
+}
+
+#book-zoom{
+	-webkit-transition: -webkit-transform 1s;
+	-moz-transition: -moz-transform 1s;
+	-ms-transition: -ms-transform 1s;
+	-o-transition: -o-transform 1s;
+	transition: transform 1s;
+}
+
+.animated{
+	-webkit-transition:margin-left 0.2s ease-in-out;
+	-moz-transition:margin-left 0.2s ease-in-out;
+	-o-transition:margin-left 0.2s ease-in-out;
+	-ms-transition:margin-left 0.2s ease-in-out;
+	transition:margin-left 0.2s ease-in-out;
+}
+
+.original-docs{
+	margin-top:20px;
+	/* width:942px;
+	height:600px; */
+	/* width:1004px;
+	height: 740px; */
+	width:1116px;
+	height: 820px;
+}
+
+.original-docs .page{
+	/* width:471px;
+	height:600px; */
+	/* width:502px;
+	height: 740px; */
+	width:558px;
+	height: 820px;
+	background:white;
+
+	-webkit-box-shadow:0 0 20px rgba(0,0,0,0.2);
+	-moz-box-shadow:0 0 20px rgba(0,0,0,0.2);
+	-ms-box-shadow:0 0 20px rgba(0,0,0,0.2);
+	-o-box-shadow:0 0 20px rgba(0,0,0,0.2);
+	box-shadow:0 0 20px rgba(0,0,0,0.2);
+}
+
+.original-docs .hard{
+	/* background-image:url(../pics/covers.jpg); */
+}
+
+.original-docs .p2{
+	/* background-position:-471px 0; */
+	background-position:-558px 0;
+}
+
+.original-docs .p28{
+	background:-webkit-gradient(linear, left top, right top, color-stop(0.95, #fff), color-stop(1, #dadada));
+	background-image:-webkit-linear-gradient(left, #fff 95%, #dadada 100%);
+	background-image:-moz-linear-gradient(left, #fff 95%, #dadada 100%);
+	background-image:-ms-linear-gradient(left, #fff 95%, #dadada 100%);
+	background-image:-o-linear-gradient(left, #fff 95%, #dadada 100%);
+	background-image:linear-gradient(left, #fff 95%, #dadada 100%);
+}
+
+.original-docs .p29{
+	/* background-position:-942px 0; */
+	/* background-position:-1004px 0; */
+	background-position:-1116px 0;
+}
+
+.original-docs .p30{
+	background-position:-1413px 0;
+}
+
+.original-docs .even .gradient{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background-image:url(../pics/right-border.png);
+	background-position:right top;
+	background-repeat: repeat-y;
+}
+
+.original-docs .odd .gradient{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background-image:url(../pics/left-border.png);
+	background-position:left top;
+	background-repeat: repeat-y;
+}
+
+.original-docs .page-wrapper{
+	-webkit-perspective:2000px;
+	-moz-perspective: 2000px;
+	-ms-perspective: 2000px;
+	perspective: 2000px;
+}
+
+
+.original-docs .loader{
+	background-image:url(../pics/loader.gif);
+	width:22px;
+	height:22px;
+	position:absolute;
+	top:280px;
+	left:219px;
+}
+
+.original-docs .shadow{
+	-webkit-transition: -webkit-box-shadow 0.5s;
+	-moz-transition: -moz-box-shadow 0.5s;
+	-o-transition: -webkit-box-shadow 0.5s;
+	-ms-transition: -ms-box-shadow 0.5s;
+
+	-webkit-box-shadow:0 0 20px #ccc;
+	-moz-box-shadow:0 0 20px #ccc;
+	-o-box-shadow:0 0 20px #ccc;
+	-ms-box-shadow:0 0 20px #ccc;
+	box-shadow:0 0 20px #ccc;
+}
+
+.original-docs .tabs{
+	/* width:942px; */
+	width:1004px;
+	height:22px;
+	top:-22px;
+	position:relative;
+	z-index:1;
+}
+
+.original-docs .tabs > div{
+	/* width:461px; */
+	width:631px;;
+	height:22px;
+	float:left;
+}
+
+.original-docs .tabs .left{
+	text-align:left;
+	margin-left:10px;
+}
+
+
+.original-docs .tabs .right{
+	text-align:right;
+	margin-right:10px;
+}
+
+.original-docs .tabs a{
+	color:black;
+	-webkit-border-image: url(../pics/tab-off.png) 5 20 5 20 repeat stretch;
+	border-width: 5px 20px 5px 20px;
+	display:inline-block;
+	font:bold 11px arial;
+	text-shadow:1px 1px 0 #ddd;
+	color:#333;
+	line-height:12px;
+	text-decoration:none;
+}
+
+.original-docs .tabs .on,
+.original-docs .tabs .on:hover{
+	-webkit-border-image: url(../pics/tab-on.png) 5 20 5 20 repeat stretch;
+	cursor:default;
+}
+
+.original-docs .tabs a:hover{
+	color:black;
+	text-decoration: none;
+	cursor:pointer;
+	-webkit-border-image: url(../pics/tab-hover.png) 5 20 5 20 repeat stretch;
+
+}
+
+/* ===== メニューボタン ===== */
+#menuButton {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 10000;
+
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+
+    color: #ffffff;
+    background: #3F3631;
+
+    padding: 8px 12px;
+    border-radius: 8px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+/* ===== 目次パネル ===== */
+#tocPanel {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 320px;
+    height: 100vh;
+
+    background: #3F3631;
+    color: #ffffff;
+
+    overflow-y: auto;
+
+    z-index: 9999;
+
+    padding: 60px 20px 20px;
+
+    box-sizing: border-box;
+
+    box-shadow: 4px 0 20px rgba(0,0,0,0.4);
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+/* ===== リスト全体 ===== */
+#tocList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== 各項目 ===== */
+#tocList li {
+    cursor: pointer;
+
+    padding: 10px 4px;
+    margin-bottom: 6px;
+
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+
+    font-size: 14px;
+    line-height: 1.4;
+
+    transition: all 0.2s ease;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+/* ===== ホバー ===== */
+#tocList li:hover {
+    background: rgba(255,255,255,0.08);
+    padding-left: 10px;
+}
+
+#tocList li {
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+}
+
+#tocList li.active {
+    background: rgba(255,255,255,0.18);
+    color: #ffffff;
+    font-weight: bold;
+}
+
+#tocList li:hover {
+    background: rgba(255,255,255,0.10);
+}

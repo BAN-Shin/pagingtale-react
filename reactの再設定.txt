@@ -1,0 +1,9 @@
+﻿cd C:\pleiades\xampp\htdocs\pagingtale-react
+Remove-Item -Recurse -Force node_modules
+Remove-Item -Force .next -ErrorAction SilentlyContinue
+
+Remove-Item -Force pnpm-lock.yaml -ErrorAction SilentlyContinue
+
+pnpm install
+
+pnpm dev

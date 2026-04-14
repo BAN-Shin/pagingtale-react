@@ -1,0 +1,48 @@
+﻿import type { BookDefinition } from "@/lib/pagingtale/types";
+
+export const sampleBook: BookDefinition = {
+  id: "how-to-draw-sample",
+  title: "たったひとつの絵の描き方",
+  totalPages: 32,
+  toc: [
+    { page: 1, title: "カバー" },
+    { page: 2, title: "目次" },
+    {
+      page: 4,
+      title: "たったひとつの絵の描き方",
+      question: {
+        id: "q-page-4",
+        prompt: "このページのキーワードを入力してください",
+        placeholder: "例：構図",
+        correctAnswer: "構図",
+        judgeMode: "exact",
+        explanation: "この問題では完全一致で判定します。",
+      },
+    },
+    { page: 6, title: "林檎のスケッチ" },
+    {
+      page: 8,
+      title: "蜜柑（演習）",
+      question: {
+        id: "q-page-8",
+        prompt: "蜜柑の形の特徴をひとことで入力してください",
+        placeholder: "例：ややつぶれた円",
+        correctAnswer: "ややつぶれた円",
+        judgeMode: "includes",
+        explanation: "部分一致で判定します。",
+      },
+    },
+    { page: 10, title: "ポーズマニアックス" },
+    { page: 12, title: "人物スケッチ（演習）" },
+    { page: 14, title: "バナナのスケッチ" },
+    { page: 16, title: "マグカップ（演習）" },
+    { page: 18, title: "犬" },
+    { page: 20, title: "遠近法の仕組み" },
+    { page: 22, title: "消失点とアイレベル" },
+    { page: 24, title: "坂道の消失点" },
+    { page: 26, title: "自然なパース" },
+    { page: 28, title: "魚眼レンズ" },
+    { page: 30, title: "風景のスケッチ" },
+    { page: 32, title: "裏表紙" },
+  ],
+};

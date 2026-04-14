@@ -1,0 +1,15 @@
+﻿{
+  "bookId": "HowToDraw",
+  "tests": [
+    {
+      "testId": "test-art-003",
+      "bookId": "HowToDraw",
+      "testTitle": "絵の描き方と遠近法",
+      "targetLessonFrom": 4,
+      "targetLessonTo": 4,
+      "mode": "test",
+      "publishedAt": "2026/04/10",
+      "notes": "たったひとつの絵の描き方と遠近法"
+    }
+  ]
+}

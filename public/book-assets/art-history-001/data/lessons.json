@@ -1,0 +1,39 @@
+﻿{
+  "bookId": "art-history-001",
+  "lessons": [
+    {
+      "lessonId": "art_l001",
+      "bookId": "art-history-001",
+      "lessonNo": 1,
+      "lessonTitle": "図と地",
+      "theme": "構図",
+      "learningObjective": "画面における図と地について理解する",
+      "startPage": 4,
+      "endPage": 5,
+      "difficulty": "normal",
+      "estimatedMinutes": 25,
+      "testId": "test-art-001",
+      "publishPages": true,
+      "publishQuestions": true,
+      "description": "オブジェクトの配置と視線誘導について学ぶ",
+      "createdAt": "2026/04/07 20:34:55"
+    },
+    {
+      "lessonId": "art_l002",
+      "bookId": "art-history-001",
+      "lessonNo": 2,
+      "lessonTitle": "グランド・ジャット島の日曜日の午後",
+      "theme": "点描と近代絵画",
+      "learningObjective": "色と点による表現技法と作品背景を理解する",
+      "startPage": 6,
+      "endPage": 7,
+      "difficulty": "normal",
+      "estimatedMinutes": 25,
+      "testId": "test-art-001",
+      "publishPages": true,
+      "publishQuestions": true,
+      "description": "スーラの作品を通して色彩理論と歴史を学ぶ",
+      "createdAt": "2026/04/06 20:44:55"
+    }
+  ]
+}
