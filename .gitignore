@@ -69,6 +69,7 @@ HowToDraw_backup_before_delete/
 *.pyc
 __pycache__/
 *.xlsm~
+~$*.xlsm
 ~$*.xlsx
 
 # =========================
