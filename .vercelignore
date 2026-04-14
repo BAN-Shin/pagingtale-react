@@ -1,0 +1,17 @@
+﻿# バックアップ全部除外
+_page_manager_backups/
+
+# 動画
+*.mp4
+*.mov
+
+# ローカル素材
+public/book-assets/**/mov/
+
+# 不要巨大ファイル
+*.zip
+*.psd
+*.ai
+
+# node_modulesは自動で除外されるが念のため
+node_modules/
