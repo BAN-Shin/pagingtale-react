@@ -6,7 +6,7 @@ _page_manager_backups/
 *.mov
 
 # ローカル素材
-public/book-assets/**/mov/
+#public/book-assets/**/mov/
 
 # 不要巨大ファイル
 *.zip
