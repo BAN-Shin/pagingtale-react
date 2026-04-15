@@ -49,23 +49,25 @@ next-env.d.ts
 .vercel
 
 # =========================
-# ❗ PagingTale用（超重要）
+# ❗ PagingTale用
 # =========================
 
-# バックアップフォルダ（←今回の原因）
+# バックアップ
 _page_manager_backups/
 HowToDraw_backup_before_insert/
 HowToDraw_backup_before_delete/
 
-# 動画・重い素材（必要なら外してOK）
+# 動画（Cloudflare R2使うなら除外OK）
 *.mp4
 *.mov
 *.avi
+
+# 重い制作ファイル
 *.zip
 *.psd
 *.ai
 
-# Python / Excel 作業ファイル
+# Python / Excel
 *.pyc
 __pycache__/
 *.xlsm~
@@ -80,4 +82,23 @@ __pycache__/
 
 # Cloudflare Wrangler
 .wrangler/
-public/book-assets/
+
+# =========================
+# 🚀 PagingTale本体（重要）
+# =========================
+
+# 一旦全部除外
+public/book-assets/*
+
+# 必要なものだけ戻す
+!public/book-assets/books.json
+!public/book-assets/pics/
+
+# art-history
+!public/book-assets/art-history-001/**
+# HowToDraw
+!public/book-assets/HowToDraw/**
+
+# ただし動画は除外（R2運用前提）
+public/book-assets/**/*.mp4
+public/book-assets/**/*.mov
