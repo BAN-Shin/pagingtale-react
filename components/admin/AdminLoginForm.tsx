@@ -50,8 +50,7 @@ export default function AdminLoginForm() {
       }
 
       startTransition(() => {
-        router.push("/admin/submissions");
-        router.refresh();
+        window.location.href = "/admin/submissions";
       });
     } catch (submitError) {
       console.error("admin login form error:", submitError);
