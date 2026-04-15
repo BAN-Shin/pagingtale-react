@@ -1,0 +1,13 @@
+﻿cd C:\pleiades\xampp\htdocs\pagingtale-react
+
+git status
+
+git add .
+
+※特定ファイルだけなら
+git add components\book\BookViewerWithQuiz.tsx
+
+git commit -m "feat: HowToDrawをプラクティスに変更"
+
+git push origin main
+

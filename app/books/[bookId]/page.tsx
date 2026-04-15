@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import BookViewerWithQuiz from "@/components/book/BookViewerWithQuiz";
 import { getStudentSession } from "@/lib/student-auth";
+import { getAdminSession } from "@/lib/admin-auth";
 
 type BookPageProps = {
   params: Promise<{
@@ -35,7 +36,8 @@ function normalizeTestId(value?: string): string | null {
 export default async function BookDetailPage(props: BookPageProps) {
   const params = await props.params;
   const searchParams = props.searchParams ? await props.searchParams : {};
-  const session = await getStudentSession();
+  const studentSession = await getStudentSession();
+  const adminSession = await getAdminSession();
 
   async function logoutStudent() {
     "use server";
@@ -47,7 +49,14 @@ export default async function BookDetailPage(props: BookPageProps) {
   const bookId = normalizeBookId(params.bookId);
   const initialPage = parseInitialPage(searchParams.page);
   const testId = normalizeTestId(searchParams.testId);
-  const isGuest = !session;
+
+  const isStudentViewer = Boolean(studentSession);
+  const isTeacherViewer = Boolean(
+    adminSession &&
+      !studentSession &&
+      (adminSession.role === "teacher" || adminSession.role === "admin")
+  );
+  const isGuestViewer = !isStudentViewer && !isTeacherViewer;
 
   return (
     <main className="relative h-screen w-full bg-white">
@@ -59,7 +68,11 @@ export default async function BookDetailPage(props: BookPageProps) {
           ← 教材一覧へ
         </Link>
 
-        {session ? (
+        {isTeacherViewer ? (
+          <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-bold text-sky-800 shadow-md">
+            教師閲覧中
+          </div>
+        ) : isStudentViewer ? (
           <form action={logoutStudent}>
             <button
               type="submit"
@@ -80,16 +93,17 @@ export default async function BookDetailPage(props: BookPageProps) {
         initialPage={initialPage}
         testId={testId}
         authenticatedStudentProfile={
-          session
+          studentSession
             ? {
-                classId: session.classId,
-                studentNumber: session.studentNumber,
-                studentName: session.studentName,
+                classId: studentSession.classId,
+                studentNumber: studentSession.studentNumber,
+                studentName: studentSession.studentName,
               }
             : null
         }
-        lockStudentProfile={Boolean(session)}
-        showQuestionUi={!isGuest}
+        lockStudentProfile={isStudentViewer}
+        showQuestionUi={!isGuestViewer}
+        teacherCanSwitchMode={isTeacherViewer}
       />
     </main>
   );

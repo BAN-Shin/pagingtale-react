@@ -146,6 +146,7 @@ type BookViewerWithQuizProps = {
   authenticatedStudentProfile?: AuthenticatedStudentProfile | null;
   lockStudentProfile?: boolean;
   showQuestionUi?: boolean;
+  teacherCanSwitchMode?: boolean;
 };
 
 function normalizeBookId(bookId?: string): string {
@@ -539,6 +540,7 @@ export default function BookViewerWithQuiz({
   authenticatedStudentProfile = null,
   lockStudentProfile = false,
   showQuestionUi = true,
+  teacherCanSwitchMode = false,
 }: BookViewerWithQuizProps) {
   const requestedBookId = useMemo(() => normalizeBookId(bookIdProp), [bookIdProp]);
 
@@ -574,6 +576,7 @@ export default function BookViewerWithQuiz({
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [overrideMode, setOverrideMode] = useState<QuestionMode | null>(null);
 
   const submitLockRef = useRef<boolean>(false);
   const previousRemainingMsRef = useRef<number | null>(null);
@@ -970,7 +973,12 @@ export default function BookViewerWithQuiz({
     return () => {
       window.clearTimeout(timerId);
     };
-  }, [lockStudentProfile, showQuestionUi, studentProfile.classId, studentProfile.studentNumber]);
+  }, [
+    lockStudentProfile,
+    showQuestionUi,
+    studentProfile.classId,
+    studentProfile.studentNumber,
+  ]);
 
   const currentQuestions = useMemo(() => {
     if (!questionMaster || !showQuestionUi) return [];
@@ -1020,10 +1028,13 @@ export default function BookViewerWithQuiz({
     return "practice";
   }, [activeTest, currentQuestions, showQuestionUi]);
 
+  const displayMode: QuestionMode =
+    teacherCanSwitchMode && overrideMode ? overrideMode : currentPageMode;
+
   const allTestQuestions = useMemo(() => {
     const allQuestions = questionMaster?.questions ?? [];
 
-    if (!showQuestionUi || !activeTest || currentPageMode !== "test") {
+    if (!showQuestionUi || !activeTest || displayMode !== "test") {
       return [] as QuestionItem[];
     }
 
@@ -1045,14 +1056,10 @@ export default function BookViewerWithQuiz({
           question.page >= lesson.startPage && question.page <= lesson.endPage
       )
     );
-  }, [activeTest, currentPageMode, lessonsMaster, questionMaster, showQuestionUi]);
+  }, [activeTest, displayMode, lessonsMaster, questionMaster, showQuestionUi]);
 
   useEffect(() => {
-    if (
-      !showQuestionUi ||
-      currentPageMode !== "test" ||
-      !activeTest?.testId
-    ) {
+    if (!showQuestionUi || displayMode !== "test" || !activeTest?.testId) {
       initializedTestSessionKeyRef.current = "";
       return;
     }
@@ -1088,7 +1095,7 @@ export default function BookViewerWithQuiz({
 
       return prev;
     });
-  }, [activeTest, allTestQuestions, bookId, currentPageMode, showQuestionUi]);
+  }, [activeTest, allTestQuestions, bookId, displayMode, showQuestionUi]);
 
   const timeLimitMinutes =
     typeof activeTest?.timeLimitMinutes === "number"
@@ -1105,7 +1112,7 @@ export default function BookViewerWithQuiz({
     if (
       !showQuestionUi ||
       !activeTest ||
-      currentPageMode !== "test" ||
+      displayMode !== "test" ||
       !timeLimitMinutes ||
       timeLimitMinutes <= 0
     ) {
@@ -1129,7 +1136,7 @@ export default function BookViewerWithQuiz({
 
     saveTimerSnapshot(bookId, activeTest.testId, snapshot);
     setTimerSnapshot(snapshot);
-  }, [activeTest, bookId, currentPageMode, timeLimitMinutes, showQuestionUi]);
+  }, [activeTest, bookId, displayMode, timeLimitMinutes, showQuestionUi]);
 
   useEffect(() => {
     if (!timerSnapshot) {
@@ -1168,8 +1175,12 @@ export default function BookViewerWithQuiz({
     setCurrentPage(Math.max(1, Math.min(finalPage, safeInitialPage)));
   }, [bookMeta, finalPage, initialPage, requestedBookId]);
 
+  useEffect(() => {
+    setOverrideMode(null);
+  }, [requestedBookId, testIdProp]);
+
   const isTimedTest =
-    !!activeTest && currentPageMode === "test" && !!timeLimitMinutes;
+    !!activeTest && displayMode === "test" && !!timeLimitMinutes;
   const isStudentInfoPage = currentPage === STUDENT_INFO_PAGE;
   const isSubmitPage = currentPage === finalPage;
   const shouldShowQuestionPanelArea = showQuestionUi && !isStudentInfoPage;
@@ -1457,11 +1468,53 @@ export default function BookViewerWithQuiz({
         initialPage={currentPage}
       />
 
-      {showQuestionUi && isTimedTest && remainingMs !== null && !isSubmitted ? (
-        <div className="pointer-events-none absolute right-4 top-4 z-50 sm:right-5 sm:top-5">
-          <div className="pointer-events-auto rounded-2xl border border-rose-200 bg-white/95 px-4 py-3 text-sm font-bold text-rose-700 shadow-[0_10px_30px_rgba(0,0,0,0.12)] backdrop-blur">
-            残り時間: {formatRemainingTime(remainingMs)}
-          </div>
+      {showQuestionUi && (teacherCanSwitchMode || (isTimedTest && remainingMs !== null && !isSubmitted)) ? (
+        <div className="pointer-events-none absolute right-4 top-32 z-40 flex flex-col gap-2 sm:right-5 sm:top-20">
+          {teacherCanSwitchMode ? (
+            <div className="pointer-events-auto flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/95 px-3 py-2 shadow-[0_10px_30px_rgba(0,0,0,0.12)] backdrop-blur">
+              <span className="px-1 text-xs font-bold tracking-wide text-slate-500">
+                MODE
+              </span>
+
+              <button
+                type="button"
+                onClick={() => setOverrideMode("practice")}
+                className={`rounded-lg px-3 py-1 text-sm font-bold transition ${
+                  displayMode === "practice"
+                    ? "bg-sky-600 text-white"
+                    : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                }`}
+              >
+                practice
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setOverrideMode("test")}
+                className={`rounded-lg px-3 py-1 text-sm font-bold transition ${
+                  displayMode === "test"
+                    ? "bg-rose-600 text-white"
+                    : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                }`}
+              >
+                test
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setOverrideMode(null)}
+                className="rounded-lg bg-slate-100 px-3 py-1 text-sm font-bold text-slate-600 transition hover:bg-slate-200"
+              >
+                自動
+              </button>
+            </div>
+          ) : null}
+
+          {isTimedTest && remainingMs !== null && !isSubmitted ? (
+            <div className="pointer-events-auto rounded-2xl border border-rose-200 bg-white/95 px-4 py-3 text-sm font-bold text-rose-700 shadow-[0_10px_30px_rgba(0,0,0,0.12)] backdrop-blur">
+              残り時間: {formatRemainingTime(remainingMs)}
+            </div>
+          ) : null}
         </div>
       ) : null}
 
@@ -1591,7 +1644,7 @@ export default function BookViewerWithQuiz({
                   <span>
                     {currentPageQuestionCount > 0
                       ? `${questionToggleLabel}${
-                          currentPageMode === "test" ? " / test" : " / practice"
+                          displayMode === "test" ? " / test" : " / practice"
                         }`
                       : isSubmitPage
                         ? "提出"
@@ -1609,22 +1662,20 @@ export default function BookViewerWithQuiz({
                         <div className="rounded-2xl border border-black/10 bg-white/90 px-4 py-3 text-sm font-semibold text-slate-700 shadow-[0_8px_20px_rgba(0,0,0,0.08)]">
                           このページの問題：{currentPageQuestionCount}問 / 回答済み：
                           {answeredQuestionCount}問 / モード：
-                          {currentPageMode === "test" ? "test" : "practice"}
+                          {displayMode === "test" ? "test" : "practice"}
                         </div>
                       ) : null}
 
                       {currentQuestions.map((question, index) => {
-                        const mode = currentPageMode;
-
                         return (
                           <div key={question.id} className="space-y-2">
                             <div className="rounded-xl border border-black/10 bg-white/85 px-3 py-2 text-xs font-bold tracking-wide text-slate-500 shadow-[0_6px_16px_rgba(0,0,0,0.06)]">
-                              問題 {index + 1} / {mode}
+                              問題 {index + 1} / {displayMode}
                             </div>
 
                             <QuestionPanel
                               question={question}
-                              mode={mode}
+                              mode={displayMode}
                               storedAnswer={answers[question.id]}
                               onSubmit={(value, result) =>
                                 handleSubmitAnswer(question.id, value, result)
@@ -1634,7 +1685,7 @@ export default function BookViewerWithQuiz({
                         );
                       })}
 
-                      {isSubmitPage && currentPageMode === "test" ? (
+                      {isSubmitPage && displayMode === "test" ? (
                         <div className="rounded-2xl border border-sky-200 bg-sky-50/90 px-4 py-4 text-sm text-sky-900 shadow-[0_8px_20px_rgba(0,0,0,0.08)]">
                           <div className="font-bold">提出ページ</div>
                           <div className="mt-1 leading-6">
