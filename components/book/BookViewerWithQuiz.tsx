@@ -145,6 +145,7 @@ type BookViewerWithQuizProps = {
   testId?: string | null;
   authenticatedStudentProfile?: AuthenticatedStudentProfile | null;
   lockStudentProfile?: boolean;
+  showQuestionUi?: boolean;
 };
 
 function normalizeBookId(bookId?: string): string {
@@ -537,6 +538,7 @@ export default function BookViewerWithQuiz({
   testId: testIdProp = null,
   authenticatedStudentProfile = null,
   lockStudentProfile = false,
+  showQuestionUi = true,
 }: BookViewerWithQuizProps) {
   const requestedBookId = useMemo(() => normalizeBookId(bookIdProp), [bookIdProp]);
 
@@ -550,7 +552,7 @@ export default function BookViewerWithQuiz({
   );
   const [bookMeta, setBookMeta] = useState<BookMeta | null>(null);
   const [tocItems, setTocItems] = useState<TocItem[]>([]);
-  const [isQuestionLoading, setIsQuestionLoading] = useState<boolean>(true);
+  const [isQuestionLoading, setIsQuestionLoading] = useState<boolean>(false);
   const [questionLoadError, setQuestionLoadError] = useState<string | null>(
     null
   );
@@ -562,7 +564,7 @@ export default function BookViewerWithQuiz({
   );
   const [classOptions, setClassOptions] = useState<ClassOption[]>([]);
   const [isClassOptionsLoading, setIsClassOptionsLoading] =
-    useState<boolean>(true);
+    useState<boolean>(false);
   const [classOptionsError, setClassOptionsError] = useState<string | null>(
     null
   );
@@ -625,22 +627,43 @@ export default function BookViewerWithQuiz({
 
     async function loadMasters() {
       try {
-        setIsQuestionLoading(true);
+        setIsQuestionLoading(showQuestionUi);
         setQuestionLoadError(null);
 
         const encodedBookId = encodeURIComponent(requestedBookId);
 
         const [questionsData, testsData, lessonsData, tocData, bookData] =
           await Promise.all([
-            safeFetchJson(`/book-assets/${encodedBookId}/data/questions.json`),
-            safeFetchJson(`/book-assets/${encodedBookId}/data/tests.json`),
-            safeFetchJson(`/book-assets/${encodedBookId}/data/lessons.json`),
+            showQuestionUi
+              ? safeFetchJson(`/book-assets/${encodedBookId}/data/questions.json`)
+              : Promise.resolve(null),
+            showQuestionUi
+              ? safeFetchJson(`/book-assets/${encodedBookId}/data/tests.json`)
+              : Promise.resolve(null),
+            showQuestionUi
+              ? safeFetchJson(`/book-assets/${encodedBookId}/data/lessons.json`)
+              : Promise.resolve(null),
             safeFetchJson(`/book-assets/${encodedBookId}/data/toc.json`),
             safeFetchJson(`/book-assets/${encodedBookId}/data/book.json`),
           ]);
 
         if (!bookData) {
           throw new Error("book.json が見つかりません。");
+        }
+
+        const safeBookMeta = normalizeBookMeta(bookData, requestedBookId);
+        const safeTocItems = normalizeTocItems(tocData);
+
+        if (!showQuestionUi) {
+          if (cancelled) return;
+
+          setQuestionMaster(null);
+          setTestsMaster(null);
+          setLessonsMaster(null);
+          setBookMeta(safeBookMeta);
+          setTocItems(safeTocItems);
+          setAnswers({});
+          return;
         }
 
         if (!questionsData) {
@@ -746,16 +769,13 @@ export default function BookViewerWithQuiz({
           };
         }
 
-        const safeTocItems = normalizeTocItems(tocData);
-        const safeBookMeta = normalizeBookMeta(bookData, safeQuestionData.bookId);
-
         if (cancelled) return;
 
         setQuestionMaster(safeQuestionData);
         setTestsMaster(safeTestsMaster);
         setLessonsMaster(safeLessonsMaster);
-        setTocItems(safeTocItems);
         setBookMeta(safeBookMeta);
+        setTocItems(safeTocItems);
         setAnswers(loadAnswers(safeQuestionData.bookId));
       } catch (error) {
         if (cancelled) return;
@@ -778,9 +798,16 @@ export default function BookViewerWithQuiz({
     return () => {
       cancelled = true;
     };
-  }, [requestedBookId]);
+  }, [requestedBookId, showQuestionUi]);
 
   useEffect(() => {
+    if (!showQuestionUi) {
+      setClassOptions([]);
+      setIsClassOptionsLoading(false);
+      setClassOptionsError(null);
+      return;
+    }
+
     let cancelled = false;
 
     async function loadClassOptions() {
@@ -854,10 +881,10 @@ export default function BookViewerWithQuiz({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [showQuestionUi]);
 
   useEffect(() => {
-    if (lockStudentProfile) {
+    if (!showQuestionUi || lockStudentProfile) {
       return;
     }
 
@@ -943,17 +970,19 @@ export default function BookViewerWithQuiz({
     return () => {
       window.clearTimeout(timerId);
     };
-  }, [lockStudentProfile, studentProfile.classId, studentProfile.studentNumber]);
+  }, [lockStudentProfile, showQuestionUi, studentProfile.classId, studentProfile.studentNumber]);
 
   const currentQuestions = useMemo(() => {
-    if (!questionMaster) return [];
+    if (!questionMaster || !showQuestionUi) return [];
 
     return questionMaster.questions.filter(
       (question) => question.page === currentPage
     );
-  }, [currentPage, questionMaster]);
+  }, [currentPage, questionMaster, showQuestionUi]);
 
   const activeTest = useMemo(() => {
+    if (!showQuestionUi) return null;
+
     if (forcedTestId && testsMaster?.tests?.length) {
       const forced = testsMaster.tests.find(
         (test) => test.testId === forcedTestId
@@ -969,9 +998,13 @@ export default function BookViewerWithQuiz({
       lessonsMaster,
       questionMaster?.questions ?? []
     );
-  }, [forcedTestId, testsMaster, lessonsMaster, questionMaster]);
+  }, [forcedTestId, testsMaster, lessonsMaster, questionMaster, showQuestionUi]);
 
   const currentPageMode = useMemo<QuestionMode>(() => {
+    if (!showQuestionUi) {
+      return "practice";
+    }
+
     const testMode = getTestMode(activeTest?.mode);
 
     if (testMode) {
@@ -985,12 +1018,12 @@ export default function BookViewerWithQuiz({
     }
 
     return "practice";
-  }, [activeTest, currentQuestions]);
+  }, [activeTest, currentQuestions, showQuestionUi]);
 
   const allTestQuestions = useMemo(() => {
     const allQuestions = questionMaster?.questions ?? [];
 
-    if (!activeTest || currentPageMode !== "test") {
+    if (!showQuestionUi || !activeTest || currentPageMode !== "test") {
       return [] as QuestionItem[];
     }
 
@@ -1012,10 +1045,14 @@ export default function BookViewerWithQuiz({
           question.page >= lesson.startPage && question.page <= lesson.endPage
       )
     );
-  }, [activeTest, currentPageMode, lessonsMaster, questionMaster]);
+  }, [activeTest, currentPageMode, lessonsMaster, questionMaster, showQuestionUi]);
 
   useEffect(() => {
-    if (currentPageMode !== "test" || !activeTest?.testId) {
+    if (
+      !showQuestionUi ||
+      currentPageMode !== "test" ||
+      !activeTest?.testId
+    ) {
       initializedTestSessionKeyRef.current = "";
       return;
     }
@@ -1051,7 +1088,7 @@ export default function BookViewerWithQuiz({
 
       return prev;
     });
-  }, [activeTest, allTestQuestions, bookId, currentPageMode]);
+  }, [activeTest, allTestQuestions, bookId, currentPageMode, showQuestionUi]);
 
   const timeLimitMinutes =
     typeof activeTest?.timeLimitMinutes === "number"
@@ -1066,6 +1103,7 @@ export default function BookViewerWithQuiz({
 
   useEffect(() => {
     if (
+      !showQuestionUi ||
       !activeTest ||
       currentPageMode !== "test" ||
       !timeLimitMinutes ||
@@ -1091,7 +1129,7 @@ export default function BookViewerWithQuiz({
 
     saveTimerSnapshot(bookId, activeTest.testId, snapshot);
     setTimerSnapshot(snapshot);
-  }, [activeTest, bookId, currentPageMode, timeLimitMinutes]);
+  }, [activeTest, bookId, currentPageMode, timeLimitMinutes, showQuestionUi]);
 
   useEffect(() => {
     if (!timerSnapshot) {
@@ -1134,13 +1172,14 @@ export default function BookViewerWithQuiz({
     !!activeTest && currentPageMode === "test" && !!timeLimitMinutes;
   const isStudentInfoPage = currentPage === STUDENT_INFO_PAGE;
   const isSubmitPage = currentPage === finalPage;
-  const shouldShowQuestionPanelArea = !isStudentInfoPage;
+  const shouldShowQuestionPanelArea = showQuestionUi && !isStudentInfoPage;
 
-  const questionStatusText = isQuestionLoading
-    ? "問題データを読み込み中です..."
-    : questionLoadError
-      ? `問題データの読み込みに失敗しました: ${questionLoadError}`
-      : null;
+  const questionStatusText =
+    showQuestionUi && isQuestionLoading
+      ? "問題データを読み込み中です..."
+      : showQuestionUi && questionLoadError
+        ? `問題データの読み込みに失敗しました: ${questionLoadError}`
+        : null;
 
   const currentPageQuestionCount = currentQuestions.length;
 
@@ -1418,7 +1457,7 @@ export default function BookViewerWithQuiz({
         initialPage={currentPage}
       />
 
-      {isTimedTest && remainingMs !== null && !isSubmitted ? (
+      {showQuestionUi && isTimedTest && remainingMs !== null && !isSubmitted ? (
         <div className="pointer-events-none absolute right-4 top-4 z-50 sm:right-5 sm:top-5">
           <div className="pointer-events-auto rounded-2xl border border-rose-200 bg-white/95 px-4 py-3 text-sm font-bold text-rose-700 shadow-[0_10px_30px_rgba(0,0,0,0.12)] backdrop-blur">
             残り時間: {formatRemainingTime(remainingMs)}
@@ -1432,7 +1471,7 @@ export default function BookViewerWithQuiz({
             {questionStatusText}
           </div>
         </div>
-      ) : isStudentInfoPage || shouldShowQuestionPanelArea || isSubmitPage ? (
+      ) : showQuestionUi && (isStudentInfoPage || shouldShowQuestionPanelArea || isSubmitPage) ? (
         <div className="pointer-events-none absolute bottom-4 left-4 z-50 w-[380px] max-w-[calc(100vw-32px)] sm:bottom-5 sm:left-5">
           <div className="pointer-events-auto space-y-3">
             {isStudentInfoPage ? (

@@ -47,6 +47,7 @@ export default async function BookDetailPage(props: BookPageProps) {
   const bookId = normalizeBookId(params.bookId);
   const initialPage = parseInitialPage(searchParams.page);
   const testId = normalizeTestId(searchParams.testId);
+  const isGuest = !session;
 
   return (
     <main className="relative h-screen w-full bg-white">
@@ -67,7 +68,11 @@ export default async function BookDetailPage(props: BookPageProps) {
               ログアウト
             </button>
           </form>
-        ) : null}
+        ) : (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-800 shadow-md">
+            ゲスト閲覧中
+          </div>
+        )}
       </div>
 
       <BookViewerWithQuiz
@@ -84,6 +89,7 @@ export default async function BookDetailPage(props: BookPageProps) {
             : null
         }
         lockStudentProfile={Boolean(session)}
+        showQuestionUi={!isGuest}
       />
     </main>
   );

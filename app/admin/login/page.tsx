@@ -18,7 +18,7 @@ export default async function AdminLoginPage() {
               教師ログイン
             </h1>
             <p className="text-sm text-slate-600">
-              ログインすると、クラス管理画面と提出一覧画面に入れます。
+              ログインすると、提出一覧（/admin/submissions）へ移動し、そこからクラス管理画面にも入れます。
             </p>
           </div>
         </section>
