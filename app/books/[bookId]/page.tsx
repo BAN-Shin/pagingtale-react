@@ -57,8 +57,7 @@ export default async function BookDetailPage(props: BookPageProps) {
     where: eq(books.bookId, bookId),
   });
 
-  const forcedMode =
-    bookRecord?.mode === "test" ? "test" : "practice";
+  const forcedMode = bookRecord?.mode === "test" ? "test" : "practice";
 
   const isStudentViewer = Boolean(studentSession);
   const isTeacherViewer = Boolean(
@@ -77,6 +76,15 @@ export default async function BookDetailPage(props: BookPageProps) {
         >
           ← 教材一覧へ
         </Link>
+
+        {isStudentViewer ? (
+          <Link
+            href="/books/results"
+            className="rounded-xl border border-emerald-300 bg-white px-4 py-2 text-sm font-bold text-emerald-700 shadow-md transition hover:bg-emerald-50"
+          >
+            自分の結果
+          </Link>
+        ) : null}
 
         {isTeacherViewer ? (
           <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-bold text-sky-800 shadow-md">

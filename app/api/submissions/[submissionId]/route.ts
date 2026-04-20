@@ -79,7 +79,9 @@ export async function GET(_req: NextRequest, context: RouteContext) {
       .where(
         and(
           eq(testSubmissions.id, submissionId),
-          eq(testSubmissions.classId, session.classId)
+          eq(testSubmissions.classId, session.classId),
+          eq(testSubmissions.studentNumber, session.studentNumber),
+          eq(testSubmissions.studentName, session.studentName)
         )
       )
       .limit(1);
@@ -115,10 +117,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
       })
       .from(testSubmissionAnswers)
       .where(eq(testSubmissionAnswers.submissionId, submissionId))
-      .orderBy(
-        asc(testSubmissionAnswers.page),
-        asc(testSubmissionAnswers.id)
-      );
+      .orderBy(asc(testSubmissionAnswers.page), asc(testSubmissionAnswers.id));
 
     const [resultRow] = await db
       .select({

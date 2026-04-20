@@ -1,4 +1,5 @@
-﻿import { and, asc, eq, isNull } from "drizzle-orm";
+﻿import Link from "next/link";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { classes, students } from "@/db/schema";
 import {
@@ -145,14 +146,21 @@ export default async function BooksPage(props: {
           {session ? (
             <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="text-sm text-emerald-900">
-                  <div className="font-bold">ログイン中</div>
-                  <div className="mt-1">
-                    {session.studentNumber} / {session.studentName}
-                  </div>
-                </div>
-
                 <div className="flex flex-wrap gap-2">
+                  <Link
+                    href="/books/results"
+                    className="rounded-2xl border border-emerald-300 bg-white px-4 py-2 text-sm font-bold text-emerald-700 transition hover:bg-emerald-100"
+                  >
+                    自分の結果を見る
+                  </Link>
+
+                  <Link
+                    href="/books/change-password"
+                    className="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+                  >
+                    パスワード変更
+                  </Link>
+
                   <form action={logoutStudent}>
                     <button
                       type="submit"
