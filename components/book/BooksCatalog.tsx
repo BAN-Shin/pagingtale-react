@@ -54,6 +54,7 @@ type TeacherBooksResponse = {
 
 type BooksCatalogProps = {
   teacherSession?: TeacherSessionLite;
+  adminMode?: boolean;
 };
 
 function formatBookTitle(bookId: string): string {
@@ -66,10 +67,7 @@ function normalizeMode(value: unknown): "practice" | "test" {
     : "practice";
 }
 
-function toBookItem(
-  item: BooksManifestItem,
-  index: number
-): BookItem | null {
+function toBookItem(item: BooksManifestItem, index: number): BookItem | null {
   const bookId = String(item.bookId ?? "").trim();
 
   if (!bookId) {
@@ -104,7 +102,6 @@ function toBookItem(
 
 function normalizeBooks(data: BooksManifestResponse | null): BookItem[] {
   const source = Array.isArray(data?.books) ? data.books : [];
-
   const books: BookItem[] = [];
 
   source.forEach((item, index) => {
@@ -118,7 +115,6 @@ function normalizeBooks(data: BooksManifestResponse | null): BookItem[] {
     if (a.order !== b.order) {
       return a.order - b.order;
     }
-
     return a.bookId.localeCompare(b.bookId, "ja");
   });
 
@@ -167,6 +163,7 @@ function mergeBookMeta(
 
 export default function BooksCatalog({
   teacherSession = null,
+  adminMode = false,
 }: BooksCatalogProps) {
   const [books, setBooks] = useState<BookItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -201,29 +198,28 @@ export default function BooksCatalog({
             cache: "no-store",
           });
 
-          if (teacherResponse.ok) {
-            const teacherData =
-              (await teacherResponse.json()) as TeacherBooksResponse;
-
-            const teacherBooks = Array.isArray(teacherData.books)
-              ? teacherData.books
-              : [];
-
-            nextBooks = mergeBookMeta(nextBooks, teacherBooks);
+          if (!teacherResponse.ok) {
+            throw new Error(
+              `/api/teacher/books の取得に失敗しました (${teacherResponse.status})`
+            );
           }
+
+          const teacherData =
+            (await teacherResponse.json()) as TeacherBooksResponse;
+
+          const teacherBooks = Array.isArray(teacherData.books)
+            ? teacherData.books
+            : [];
+
+          nextBooks = mergeBookMeta(nextBooks, teacherBooks);
         }
 
-        if (!alive) {
-          return;
-        }
-
+        if (!alive) return;
         setBooks(nextBooks);
       } catch (err) {
         console.error("BooksCatalog load error:", err);
 
-        if (!alive) {
-          return;
-        }
+        if (!alive) return;
 
         setError(
           err instanceof Error
@@ -303,9 +299,13 @@ export default function BooksCatalog({
     <section className="space-y-4">
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-lg font-bold text-slate-900">教材を選ぶ</h2>
+          <h2 className="text-lg font-bold text-slate-900">
+            {adminMode ? "教材管理一覧" : "教材を選ぶ"}
+          </h2>
           <p className="mt-1 text-sm text-slate-500">
-            閲覧したい教材を選んでください。
+            {adminMode
+              ? "教材の表示確認と mode 切替を行えます。"
+              : "閲覧したい教材を選んでください。"}
           </p>
         </div>
       </div>
@@ -362,15 +362,17 @@ export default function BooksCatalog({
                         {book.title}
                       </div>
 
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                          book.mode === "test"
-                            ? "bg-rose-100 text-rose-700"
-                            : "bg-sky-100 text-sky-700"
-                        }`}
-                      >
-                        {book.mode}
-                      </span>
+                      {teacherSession ? (
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                            book.mode === "test"
+                              ? "bg-rose-100 text-rose-700"
+                              : "bg-sky-100 text-sky-700"
+                          }`}
+                        >
+                          {book.mode}
+                        </span>
+                      ) : null}
                     </div>
 
                     <div className="text-xs text-slate-500">{book.bookId}</div>
