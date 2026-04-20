@@ -10,6 +10,7 @@ import {
 import { getAdminSession } from "@/lib/admin-auth";
 import LoginForm from "@/components/book/LoginForm";
 import BooksCatalog from "@/components/book/BooksCatalog";
+import Link from "next/link";
 
 type SearchParams = Promise<{
   error?: string;
@@ -130,9 +131,10 @@ export default async function BooksPage(props: {
   }
 
   const loginClasses = studentSession ? [] : await loadLoginClasses();
+
   const isTeacherViewer = Boolean(
     adminSession &&
-      (!studentSession) &&
+      !studentSession &&
       (adminSession.role === "teacher" || adminSession.role === "admin")
   );
 
@@ -151,15 +153,64 @@ export default async function BooksPage(props: {
 
           {isTeacherViewer ? (
             <section className="rounded-3xl border border-sky-200 bg-sky-50 p-5 shadow-sm">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="text-sm text-sky-900">
-                  <div className="font-bold">教師ログイン中</div>
-                  <div className="mt-1">
-                    {adminSession?.teacherName} / {adminSession?.loginId}
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="text-sm text-sky-900">
+                    <div className="font-bold">教師ログイン中</div>
+                    <div className="mt-1">
+                      {adminSession?.teacherName} / {adminSession?.loginId}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-sky-300 bg-white px-4 py-2 text-sm font-bold text-sky-700">
+                    自分の教材だけ practice / test を切り替えられます
                   </div>
                 </div>
-                <div className="rounded-2xl border border-sky-300 bg-white px-4 py-2 text-sm font-bold text-sky-700">
-                  自分の教材だけ practice / test を切り替えられます
+
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    href="/admin"
+                    className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+                  >
+                    管理トップへ
+                  </Link>
+
+                  <Link
+                    href="/admin/submissions"
+                    className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+                  >
+                    提出一覧へ
+                  </Link>
+
+                  <Link
+                    href="/admin/classes"
+                    className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+                  >
+                    クラス管理へ
+                  </Link>
+
+                  <Link
+                    href="/admin/books"
+                    className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+                  >
+                    教材管理へ
+                  </Link>
+
+                  <Link
+                    href="/admin/account"
+                    className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+                  >
+                    アカウント設定へ
+                  </Link>
+
+                  {adminSession?.role === "admin" ? (
+                    <Link
+                      href="/admin/teachers"
+                      className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+                    >
+                      教師管理へ
+                    </Link>
+                  ) : null}
                 </div>
               </div>
             </section>
