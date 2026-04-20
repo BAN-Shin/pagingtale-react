@@ -3,9 +3,9 @@
   "bookVersion": "2026/04/11",
   "questions": [
     {
-      "id": "art_l001_p004_q001",
+      "id": "art-history-001_l001_p004_q001",
       "bookId": "art-history-001",
-      "lessonId": "art_l001",
+      "lessonId": "art-history-001_l001",
       "page": 4,
       "displayOrder": 1,
       "prompt": "画面全体の背景のことを何と言うか答えなさい",
@@ -18,9 +18,9 @@
       "tags": "レイアウト"
     },
     {
-      "id": "art_l002_p004_q001",
+      "id": "art-history-001_l002_p004_q001",
       "bookId": "art-history-001",
-      "lessonId": "art_l002",
+      "lessonId": "art-history-001_l002",
       "page": 4,
       "displayOrder": 1,
       "prompt": "配置された主役や要素を何と言うか答えなさい",
@@ -33,9 +33,9 @@
       "tags": "レイアウト"
     },
     {
-      "id": "art_l003_p004_q001",
+      "id": "art-history-001_l003_p004_q001",
       "bookId": "art-history-001",
-      "lessonId": "art_l003",
+      "lessonId": "art-history-001_l003",
       "page": 4,
       "displayOrder": 1,
       "prompt": "コントラストを作る３つの要素を答えなさい",
@@ -48,9 +48,9 @@
       "tags": "レイアウト,色の要素"
     },
     {
-      "id": "art_l001_p006_q001",
+      "id": "art-history-001_l001_p006_q001",
       "bookId": "art-history-001",
-      "lessonId": "art_l001",
+      "lessonId": "art-history-001_l001",
       "page": 6,
       "displayOrder": 1,
       "prompt": "この作品の作者の名前を答えなさい",
@@ -63,9 +63,9 @@
       "tags": "作者,基礎知識"
     },
     {
-      "id": "art_l002_p006_q001",
+      "id": "art-history-001_l002_p006_q001",
       "bookId": "art-history-001",
-      "lessonId": "art_l002",
+      "lessonId": "art-history-001_l002",
       "page": 6,
       "displayOrder": 1,
       "prompt": "この作品の技法は何と呼ばれますか",
@@ -78,9 +78,9 @@
       "tags": "技法,色彩"
     },
     {
-      "id": "art_l003_p006_q001",
+      "id": "art-history-001_l003_p006_q001",
       "bookId": "art-history-001",
-      "lessonId": "art_l003",
+      "lessonId": "art-history-001_l003",
       "page": 6,
       "displayOrder": 1,
       "prompt": "この作品が属する美術様式は何ですか",
@@ -93,9 +93,9 @@
       "tags": "美術史"
     },
     {
-      "id": "art_l004_p006_q001",
+      "id": "art-history-001_l004_p006_q001",
       "bookId": "art-history-001",
-      "lessonId": "art_l004",
+      "lessonId": "art-history-001_l004",
       "page": 6,
       "displayOrder": 1,
       "prompt": "この作品が描いている場面は何ですか",

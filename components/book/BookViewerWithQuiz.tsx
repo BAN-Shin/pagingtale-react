@@ -147,6 +147,7 @@ type BookViewerWithQuizProps = {
   lockStudentProfile?: boolean;
   showQuestionUi?: boolean;
   teacherCanSwitchMode?: boolean;
+  forcedMode?: "practice" | "test" | null;
 };
 
 function normalizeBookId(bookId?: string): string {
@@ -541,6 +542,7 @@ export default function BookViewerWithQuiz({
   lockStudentProfile = false,
   showQuestionUi = true,
   teacherCanSwitchMode = false,
+  forcedMode = null,
 }: BookViewerWithQuizProps) {
   const requestedBookId = useMemo(() => normalizeBookId(bookIdProp), [bookIdProp]);
 
@@ -1029,7 +1031,7 @@ export default function BookViewerWithQuiz({
   }, [activeTest, currentQuestions, showQuestionUi]);
 
   const displayMode: QuestionMode =
-    teacherCanSwitchMode && overrideMode ? overrideMode : currentPageMode;
+    forcedMode ?? (teacherCanSwitchMode && overrideMode ? overrideMode : currentPageMode);
 
   const allTestQuestions = useMemo(() => {
     const allQuestions = questionMaster?.questions ?? [];

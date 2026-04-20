@@ -7,8 +7,9 @@ import {
   setStudentSession,
   verifyStudentPassword,
 } from "@/lib/student-auth";
+import { getAdminSession } from "@/lib/admin-auth";
 import LoginForm from "@/components/book/LoginForm";
-import BooksCatalog from "../../components/book/BooksCatalog";
+import BooksCatalog from "@/components/book/BooksCatalog";
 
 type SearchParams = Promise<{
   error?: string;
@@ -51,7 +52,8 @@ export default async function BooksPage(props: {
 }) {
   const searchParams = props.searchParams ? await props.searchParams : {};
   const loginError = formatLoginError(searchParams.error);
-  const session = await getStudentSession();
+  const studentSession = await getStudentSession();
+  const adminSession = await getAdminSession();
 
   async function loginStudent(formData: FormData): Promise<LoginActionResult> {
     "use server";
@@ -127,7 +129,12 @@ export default async function BooksPage(props: {
     await clearStudentSession();
   }
 
-  const loginClasses = session ? [] : await loadLoginClasses();
+  const loginClasses = studentSession ? [] : await loadLoginClasses();
+  const isTeacherViewer = Boolean(
+    adminSession &&
+      (!studentSession) &&
+      (adminSession.role === "teacher" || adminSession.role === "admin")
+  );
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
@@ -142,13 +149,27 @@ export default async function BooksPage(props: {
             </div>
           </section>
 
-          {session ? (
+          {isTeacherViewer ? (
+            <section className="rounded-3xl border border-sky-200 bg-sky-50 p-5 shadow-sm">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="text-sm text-sky-900">
+                  <div className="font-bold">教師ログイン中</div>
+                  <div className="mt-1">
+                    {adminSession?.teacherName} / {adminSession?.loginId}
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-sky-300 bg-white px-4 py-2 text-sm font-bold text-sky-700">
+                  自分の教材だけ practice / test を切り替えられます
+                </div>
+              </div>
+            </section>
+          ) : studentSession ? (
             <section className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="text-sm text-emerald-900">
                   <div className="font-bold">ログイン中</div>
                   <div className="mt-1">
-                    {session.studentNumber} / {session.studentName}
+                    {studentSession.studentNumber} / {studentSession.studentName}
                   </div>
                 </div>
 
@@ -196,7 +217,17 @@ export default async function BooksPage(props: {
             </section>
           )}
 
-          <BooksCatalog />
+          <BooksCatalog
+            teacherSession={
+              isTeacherViewer && adminSession
+                ? {
+                    teacherId: adminSession.teacherId,
+                    teacherName: adminSession.teacherName,
+                    role: adminSession.role,
+                  }
+                : null
+            }
+          />
         </div>
       </div>
     </main>

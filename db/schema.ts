@@ -40,6 +40,31 @@ export const teachers = pgTable("teachers", {
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
 });
 
+export const books = pgTable("books", {
+  id: serial("id").primaryKey(),
+
+  bookId: text("book_id").notNull().unique(),
+  title: text("title").notNull(),
+
+  ownerTeacherId: integer("owner_teacher_id")
+    .notNull()
+    .references(() => teachers.id, { onDelete: "restrict" }),
+
+  mode: text("mode", { enum: ["practice", "test"] })
+    .notNull()
+    .default("practice"),
+
+  isPublished: boolean("is_published").notNull().default(true),
+
+  pageCount: integer("page_count").notNull().default(0),
+
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+
+  updatedAt: timestamp("updated_at", { mode: "date" })
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
 export const testSubmissions = pgTable("test_submissions", {
   id: serial("id").primaryKey(),
   bookId: text("book_id").notNull(),

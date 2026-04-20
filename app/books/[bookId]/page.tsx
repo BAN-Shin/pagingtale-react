@@ -1,4 +1,7 @@
 ﻿import Link from "next/link";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { books } from "@/db/schema";
 import BookViewerWithQuiz from "@/components/book/BookViewerWithQuiz";
 import { getStudentSession } from "@/lib/student-auth";
 import { getAdminSession } from "@/lib/admin-auth";
@@ -50,6 +53,13 @@ export default async function BookDetailPage(props: BookPageProps) {
   const initialPage = parseInitialPage(searchParams.page);
   const testId = normalizeTestId(searchParams.testId);
 
+  const bookRecord = await db.query.books.findFirst({
+    where: eq(books.bookId, bookId),
+  });
+
+  const forcedMode =
+    bookRecord?.mode === "test" ? "test" : "practice";
+
   const isStudentViewer = Boolean(studentSession);
   const isTeacherViewer = Boolean(
     adminSession &&
@@ -92,6 +102,7 @@ export default async function BookDetailPage(props: BookPageProps) {
         bookId={bookId}
         initialPage={initialPage}
         testId={testId}
+        forcedMode={forcedMode}
         authenticatedStudentProfile={
           studentSession
             ? {
