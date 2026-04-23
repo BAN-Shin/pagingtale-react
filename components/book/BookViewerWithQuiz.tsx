@@ -46,6 +46,7 @@ type BookMeta = {
   totalPages?: number;
   binding?: "rtl" | "ltr";
   startPage?: number;
+  bookVersion?: string;
 };
 
 type LessonItem = {
@@ -522,6 +523,13 @@ function normalizeBookMeta(value: unknown, fallbackBookId: string): BookMeta {
       ? Math.floor(raw.startPage)
       : undefined;
 
+  const bookVersion =
+    typeof raw.bookVersion === "string" && raw.bookVersion.trim()
+      ? raw.bookVersion.trim()
+      : typeof raw.bookVersion === "number" && Number.isFinite(raw.bookVersion)
+        ? String(raw.bookVersion)
+        : undefined;
+
   return {
     bookId:
       typeof raw.bookId === "string" && raw.bookId.trim()
@@ -531,6 +539,7 @@ function normalizeBookMeta(value: unknown, fallbackBookId: string): BookMeta {
     totalPages,
     binding,
     startPage,
+    bookVersion,
   };
 }
 
@@ -1463,6 +1472,7 @@ export default function BookViewerWithQuiz({
     <div className="relative h-screen w-full bg-[#f7f4ef]">
       <BookViewer
         bookId={bookId}
+        bookVersion={bookMeta?.bookVersion ?? "1"}
         tocItems={tocItems}
         totalPages={finalPage}
         binding={resolvedBinding}

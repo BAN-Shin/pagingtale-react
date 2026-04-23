@@ -23,6 +23,7 @@ type TurnSide = "left" | "right";
 
 type BookViewerProps = {
   bookId?: string;
+  bookVersion?: string;
   tocItems?: TocItem[];
   totalPages?: number;
   onCurrentPageChange?: (page: number) => void;
@@ -218,6 +219,7 @@ function getInitialSpreadIndexFromPage(
 function SinglePage({
   page,
   bookId,
+  bookVersion,
   side,
   isActive,
   keepMounted,
@@ -225,6 +227,7 @@ function SinglePage({
 }: {
   page: number | null;
   bookId: string;
+  bookVersion: string;
   side: "left" | "right";
   isActive: boolean;
   keepMounted: boolean;
@@ -239,6 +242,7 @@ function SinglePage({
       <PageFrame
         page={page}
         bookId={bookId}
+        bookVersion={bookVersion}
         active={isActive}
         keepMounted={keepMounted}
         priority={priority}
@@ -255,6 +259,7 @@ function SpreadView({
   binding,
   totalPages,
   bookId,
+  bookVersion,
 }: {
   spreadIndex: number;
   activePages: Set<number>;
@@ -263,6 +268,7 @@ function SpreadView({
   binding: BindingDirection;
   totalPages: number;
   bookId: string;
+  bookVersion: string;
 }) {
   const pages = getSpreadPages(spreadIndex, totalPages, binding);
 
@@ -271,6 +277,7 @@ function SpreadView({
       <SinglePage
         page={pages.left}
         bookId={bookId}
+        bookVersion={bookVersion}
         side="left"
         isActive={pages.left !== null && activePages.has(pages.left)}
         keepMounted={pages.left !== null && keepMountedPages.has(pages.left)}
@@ -279,6 +286,7 @@ function SpreadView({
       <SinglePage
         page={pages.right}
         bookId={bookId}
+        bookVersion={bookVersion}
         side="right"
         isActive={pages.right !== null && activePages.has(pages.right)}
         keepMounted={pages.right !== null && keepMountedPages.has(pages.right)}
@@ -347,6 +355,7 @@ function ControlIconButton({
 
 export default function BookViewer({
   bookId,
+  bookVersion = "1",
   tocItems: tocItemsProp,
   totalPages: totalPagesProp,
   onCurrentPageChange,
@@ -869,6 +878,7 @@ const derivedTotalPages = useMemo(() => {
                   binding={binding}
                   totalPages={derivedTotalPages}
                   bookId={safeBookId}
+                  bookVersion={bookVersion}
                 />
                 <div className="pointer-events-none absolute inset-y-0 left-1/2 z-20 w-[18px] -translate-x-1/2 bg-gradient-to-r from-black/10 via-black/5 to-black/10" />
               </>
@@ -882,6 +892,7 @@ const derivedTotalPages = useMemo(() => {
                   binding={binding}
                   totalPages={derivedTotalPages}
                   bookId={safeBookId}
+                  bookVersion={bookVersion}
                 />
 
                 <div className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-[24px] -translate-x-1/2 bg-gradient-to-r from-black/15 via-black/5 to-black/15" />
@@ -892,6 +903,7 @@ const derivedTotalPages = useMemo(() => {
                       <PageFrame
                         page={fromPages.left}
                         bookId={safeBookId}
+                        bookVersion={bookVersion}
                         active={
                           fromPages.left !== null &&
                           pageRenderConfig.activePages.has(fromPages.left)
@@ -918,6 +930,7 @@ const derivedTotalPages = useMemo(() => {
                           <PageFrame
                             page={fromPages.right}
                             bookId={safeBookId}
+                            bookVersion={bookVersion}
                             active={
                               fromPages.right !== null &&
                               pageRenderConfig.activePages.has(fromPages.right)
@@ -949,6 +962,7 @@ const derivedTotalPages = useMemo(() => {
                       <PageFrame
                         page={fromPages.right}
                         bookId={safeBookId}
+                        bookVersion={bookVersion}
                         active={
                           fromPages.right !== null &&
                           pageRenderConfig.activePages.has(fromPages.right)
@@ -975,6 +989,7 @@ const derivedTotalPages = useMemo(() => {
                           <PageFrame
                             page={fromPages.left}
                             bookId={safeBookId}
+                            bookVersion={bookVersion}
                             active={
                               fromPages.left !== null &&
                               pageRenderConfig.activePages.has(fromPages.left)
