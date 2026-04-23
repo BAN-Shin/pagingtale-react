@@ -362,6 +362,28 @@ export default function BookViewer({
   const resolvedTocItems =
     tocItemsProp && tocItemsProp.length > 0 ? tocItemsProp : tocItems;
 
+  const dedupedTocItems = useMemo(() => {
+    const result: TocItem[] = [];
+    let lastTitle = "";
+
+    for (const item of resolvedTocItems) {
+      const currentTitle = item.title.trim();
+
+      if (!currentTitle) {
+        continue;
+      }
+
+      if (currentTitle === lastTitle) {
+        continue;
+      }
+
+      result.push(item);
+      lastTitle = currentTitle;
+    }
+
+    return result;
+  }, [resolvedTocItems]);
+
 const derivedTotalPages = useMemo(() => {
   const propPages =
     typeof totalPagesProp === "number" &&
@@ -796,7 +818,7 @@ const derivedTotalPages = useMemo(() => {
               <div className="px-4 pb-4 pt-[72px]">
                 <div className="max-h-[calc(100vh-96px)] overflow-y-auto pr-1">
                   <ul className="space-y-0">
-                    {resolvedTocItems.map((item) => {
+                    {dedupedTocItems.map((item) => {
                       const isActive =
                         item.page >= minVisiblePage && item.page <= maxVisiblePage;
 
