@@ -2,7 +2,7 @@
   "bookId": "HowToDraw",
   "tests": [
     {
-      "testId": "test-draw-001",
+      "testId": "test-howtodraw-001",
       "bookId": "HowToDraw",
       "testTitle": "絵の描き方と遠近法",
       "targetLessonFrom": 3,

@@ -1,19 +1,17 @@
 ﻿"use client";
 
+import { useMemo } from "react";
+
 type PageFrameProps = {
   page: number | null;
-  bookId?: string;
+  bookId: string;
   active?: boolean;
   keepMounted?: boolean;
   priority?: boolean;
-  className?: string;
 };
 
-const FALLBACK_BOOK_ID = "pagingtale-book-001";
-
-function normalizeBookId(bookId?: string): string {
-  const value = (bookId ?? "").trim();
-  return value || FALLBACK_BOOK_ID;
+function formatPageNumber(page: number): string {
+  return String(page).padStart(3, "0");
 }
 
 export default function PageFrame({
@@ -21,34 +19,30 @@ export default function PageFrame({
   bookId,
   active = true,
   keepMounted = true,
-  priority = false,
-  className = "",
 }: PageFrameProps) {
+  const src = useMemo(() => {
+    if (page === null) return null;
+
+    const pageText = formatPageNumber(page);
+
+    // 🔥 ここが今回の本質修正
+    return `https://media.pagingtale.com/${bookId}/pages/mov_part_${pageText}.html`;
+  }, [page, bookId]);
+
   if (page === null) {
-    return <div className={`h-full w-full bg-white ${className}`} />;
+    return <div className="h-full w-full bg-white" />;
   }
 
-  const safeBookId = normalizeBookId(bookId);
-  const shouldMountIframe = active || keepMounted;
-  const src = `/book-assets/${encodeURIComponent(
-    safeBookId
-  )}/pages/mov_part_${String(page).padStart(3, "0")}.html`;
-
-  if (!shouldMountIframe) {
-    return (
-      <div className={`h-full w-full bg-white ${className}`}>
-        <div className="h-full w-full bg-[linear-gradient(180deg,#ffffff,#f7f7f7)]" />
-      </div>
-    );
+  if (!keepMounted && !active) {
+    return null;
   }
 
   return (
     <iframe
-      src={src}
-      className={`h-full w-full border-0 bg-white ${className}`}
-      sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-      loading={priority ? "eager" : "lazy"}
-      title={`${safeBookId}-page-${page}`}
+      src={src ?? ""}
+      className="h-full w-full border-none"
+      loading="lazy"
+      allow="autoplay; fullscreen"
     />
   );
 }
