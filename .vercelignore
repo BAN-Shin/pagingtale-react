@@ -1,17 +1,39 @@
-﻿# バックアップ全部除外
+﻿# =========================
+# 🚀 PagingTale - Vercel Upload Exclude
+# =========================
+
+# ===== バックアップ（全部アウト）=====
 _page_manager_backups/
 
-# 動画
+# ===== Cloudflare Wrangler ローカル状態 =====
+.wrangler/
+
+# ===== node_modules / build =====
+node_modules/
+.next/
+out/
+build/
+
+# ===== 動画（R2運用前提なので完全除外）=====
 *.mp4
 *.mov
+*.avi
+*.mkv
+public/book-assets/**/mov/
 
-# ローカル素材
-# public/book-assets/**/mov/
-
-# 不要巨大ファイル
-*.zip
+# ===== 制作元ファイル =====
 *.psd
 *.ai
+*.zip
 
-# node_modulesは自動で除外されるが念のため
-node_modules/
+# ===== Excel / Python 作業ファイル =====
+*.xlsm
+*.xlsx
+*.pyc
+__pycache__/
+
+# ===== OS / 一時 =====
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
