@@ -48,7 +48,7 @@ export default async function AdminLayout({ children }: Props) {
                 </Link>
 
                 <Link
-                  href="/books"
+                  href="/admin/books"
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
                 >
                   教材一覧
