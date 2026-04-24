@@ -95,6 +95,7 @@ public/book-assets/*
 # 必要なものだけ戻す
 !public/book-assets/books.json
 !public/book-assets/pics/
+!public/book-assets/pics/**
 
 # art-history
 !public/book-assets/art-history-001/**
