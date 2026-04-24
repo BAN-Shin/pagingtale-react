@@ -50,9 +50,9 @@ export const books = pgTable("books", {
     .notNull()
     .references(() => teachers.id, { onDelete: "restrict" }),
 
-  mode: text("mode", { enum: ["practice", "test"] })
+  mode: text("mode", { enum: ["dev", "practice", "test"] })
     .notNull()
-    .default("practice"),
+    .default("dev"),
 
   isPublished: boolean("is_published").notNull().default(true),
 

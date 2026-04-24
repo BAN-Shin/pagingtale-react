@@ -104,6 +104,8 @@ export async function POST(req: NextRequest) {
           bookId,
           title,
           ownerTeacherId,
+          mode: "dev",
+          isPublished: false,
           pageCount,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -142,6 +144,8 @@ export async function POST(req: NextRequest) {
       .update(books)
       .set({
         title,
+        mode: "dev",
+        isPublished: false,
         pageCount,
         updatedAt: new Date(),
       })

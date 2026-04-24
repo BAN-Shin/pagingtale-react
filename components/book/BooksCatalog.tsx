@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+type BookMode = "dev" | "practice" | "test";
 
 type TeacherSessionLite = {
   teacherId: number;
@@ -16,7 +18,7 @@ type BookItem = {
   description: string;
   thumbnail: string | null;
   order: number;
-  mode: "practice" | "test";
+  mode: BookMode;
   isPublished: boolean;
   pageCount: number;
   ownerTeacherId: number | null;
@@ -29,6 +31,7 @@ type BooksManifestItem = {
   description?: string;
   thumbnail?: string;
   order?: number;
+  mode?: string;
 };
 
 type BooksManifestResponse = {
@@ -61,10 +64,16 @@ function formatBookTitle(bookId: string): string {
   return bookId.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
-function normalizeMode(value: unknown): "practice" | "test" {
-  return String(value ?? "").trim().toLowerCase() === "test"
-    ? "test"
-    : "practice";
+function normalizeMode(value: unknown): BookMode {
+  const mode = String(value ?? "").trim().toLowerCase();
+
+  if (mode === "test") return "test";
+  if (mode === "practice") return "practice";
+  return "dev";
+}
+
+function isVisibleForStudent(book: BookItem): boolean {
+  return book.mode === "practice" || book.mode === "test";
 }
 
 function toBookItem(item: BooksManifestItem, index: number): BookItem | null {
@@ -86,14 +95,16 @@ function toBookItem(item: BooksManifestItem, index: number): BookItem | null {
       ? item.order
       : 100000 + index;
 
+  const mode = normalizeMode(item.mode);
+
   return {
     bookId,
     title,
     description,
     thumbnail,
     order,
-    mode: "practice",
-    isPublished: true,
+    mode,
+    isPublished: mode !== "dev",
     pageCount: 0,
     ownerTeacherId: null,
     ownerTeacherName: null,
@@ -141,12 +152,16 @@ function mergeBookMeta(
       return book;
     }
 
+    const mode = normalizeMode(meta.mode);
+
     return {
       ...book,
       title: String(meta.title ?? "").trim() || book.title,
-      mode: normalizeMode(meta.mode),
+      mode,
       isPublished:
-        typeof meta.isPublished === "boolean" ? meta.isPublished : true,
+        typeof meta.isPublished === "boolean"
+          ? meta.isPublished
+          : mode !== "dev",
       pageCount:
         typeof meta.pageCount === "number" && Number.isFinite(meta.pageCount)
           ? meta.pageCount
@@ -161,6 +176,18 @@ function mergeBookMeta(
   });
 }
 
+function getModeLabel(mode: BookMode): string {
+  if (mode === "dev") return "開発中";
+  if (mode === "practice") return "練習公開";
+  return "テスト公開";
+}
+
+function getModeBadgeClass(mode: BookMode): string {
+  if (mode === "dev") return "bg-slate-200 text-slate-700";
+  if (mode === "test") return "bg-rose-100 text-rose-700";
+  return "bg-sky-100 text-sky-700";
+}
+
 export default function BooksCatalog({
   teacherSession = null,
   adminMode = false,
@@ -169,6 +196,14 @@ export default function BooksCatalog({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pendingBookId, setPendingBookId] = useState<string | null>(null);
+
+  const visibleBooks = useMemo(() => {
+    if (adminMode) {
+      return books;
+    }
+
+    return books.filter(isVisibleForStudent);
+  }, [adminMode, books]);
 
   useEffect(() => {
     let alive = true;
@@ -240,7 +275,7 @@ export default function BooksCatalog({
     };
   }, [teacherSession]);
 
-  async function switchBookMode(bookId: string, mode: "practice" | "test") {
+  async function switchBookMode(bookId: string, mode: BookMode) {
     try {
       setPendingBookId(bookId);
 
@@ -281,6 +316,7 @@ export default function BooksCatalog({
             ? {
                 ...book,
                 mode: normalizeMode(payload?.mode ?? mode),
+                isPublished: normalizeMode(payload?.mode ?? mode) !== "dev",
               }
             : book
         )
@@ -304,8 +340,8 @@ export default function BooksCatalog({
           </h2>
           <p className="mt-1 text-sm text-slate-500">
             {adminMode
-              ? "教材の表示確認と mode 切替を行えます。"
-              : "閲覧したい教材を選んでください。"}
+              ? "開発中の教材も含めて表示します。dev / practice / test を切り替えられます。"
+              : "公開中の教材だけを表示しています。"}
           </p>
         </div>
       </div>
@@ -318,15 +354,17 @@ export default function BooksCatalog({
         <section className="rounded-3xl border border-red-200 bg-red-50 p-10 text-center text-sm text-red-700 shadow-sm">
           {error}
         </section>
-      ) : books.length === 0 ? (
+      ) : visibleBooks.length === 0 ? (
         <section className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
           表示できる教材がありません。
           <br />
-          public\book-assets\books.json を確認してください。
+          {adminMode
+            ? "public\\book-assets\\books.json と DB の books テーブルを確認してください。"
+            : "教師が practice または test に切り替えると、ここに表示されます。"}
         </section>
       ) : (
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {books.map((book) => {
+          {visibleBooks.map((book) => {
             const canEditMode = Boolean(
               teacherSession &&
                 (teacherSession.role === "admin" ||
@@ -364,13 +402,11 @@ export default function BooksCatalog({
 
                       {teacherSession ? (
                         <span
-                          className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                            book.mode === "test"
-                              ? "bg-rose-100 text-rose-700"
-                              : "bg-sky-100 text-sky-700"
-                          }`}
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${getModeBadgeClass(
+                            book.mode
+                          )}`}
                         >
-                          {book.mode}
+                          {getModeLabel(book.mode)}
                         </span>
                       ) : null}
                     </div>
@@ -398,6 +434,19 @@ export default function BooksCatalog({
                   <div className="border-t border-slate-100 px-5 pb-5 pt-3">
                     {canEditMode ? (
                       <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          disabled={pendingBookId === book.bookId}
+                          onClick={() => void switchBookMode(book.bookId, "dev")}
+                          className={`rounded-xl px-3 py-2 text-sm font-bold transition ${
+                            book.mode === "dev"
+                              ? "bg-slate-700 text-white"
+                              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                          } disabled:opacity-60`}
+                        >
+                          dev
+                        </button>
+
                         <button
                           type="button"
                           disabled={pendingBookId === book.bookId}

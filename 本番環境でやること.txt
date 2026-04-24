@@ -4,3 +4,8 @@ POSTGRES_URL="postgresql://neondb_owner:npg_7j5DpzIalYfy@ep-super-river-a17m0476
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 STUDENT_SESSION_SECRET=66d196f9a8ce14bd754b99154c9e283edcfeca609a6f5804d82a4bcbd17516eb
 
+
+
+git add public/book-assets/books.json public/book-assets/pics/howtodraw.png
+git commit -m "Add self introduction book howtodraw"
+git push

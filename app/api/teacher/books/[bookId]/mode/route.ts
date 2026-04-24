@@ -10,9 +10,10 @@ type RouteContext = {
   }>;
 };
 
-function normalizeMode(value: unknown): "practice" | "test" | null {
+function normalizeMode(value: unknown): "dev" | "practice" | "test" | null {
   const mode = String(value ?? "").trim().toLowerCase();
 
+  if (mode === "dev") return "dev";
   if (mode === "practice") return "practice";
   if (mode === "test") return "test";
   return null;
@@ -42,7 +43,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 
     if (!nextMode) {
       return NextResponse.json(
-        { ok: false, message: "mode must be practice or test." },
+        { ok: false, message: "mode must be dev, practice or test." },
         { status: 400 }
       );
     }
