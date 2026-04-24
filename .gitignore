@@ -97,6 +97,10 @@ public/book-assets/*
 !public/book-assets/pics/
 !public/book-assets/pics/**
 
+# pics内でも制作元ファイルは除外
+public/book-assets/pics/*.ai
+public/book-assets/pics/*.psd
+
 # art-history
 !public/book-assets/art-history-001/**
 # HowToDraw
@@ -105,3 +109,4 @@ public/book-assets/*
 # ただし動画は除外（R2運用前提）
 public/book-assets/**/*.mp4
 public/book-assets/**/*.mov
+.vercel
