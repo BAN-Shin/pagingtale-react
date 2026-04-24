@@ -138,7 +138,7 @@ export default async function AdminHomePage() {
           </Link>
 
           <Link
-            href="/books"
+            href="/admin/books"
             className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
           >
             <div className="space-y-2">
