@@ -1,7 +1,7 @@
 ﻿{
   "books": [
     {"bookId": "art-history-001", "title": "美術入門", "description": "グランド・ジャット島の日曜日の午後を含む、美術史と作品理解の入門教材です。", "thumbnail": "/book-assets/pics/art-history-001.png", "order": 10},
-    {"bookId": "HowToDraw", "title": "絵の描き方入門", "description": "スケッチ、形の捉え方、遠近法を学ぶ描画基礎教材です。", "thumbnail": "/book-assets/pics/howtodraw.png", "order": 20},
+    {"bookId": "HowToDraw", "title": "絵の描き方入門", "description": "スケッチ、形の捉え方、遠近法を学ぶ描画基礎教材です。", "thumbnail": "/book-assets/pics/how-to-draw.png", "order": 20},
     {"bookId": "self-introduction", "title": "自己紹介のデザイン", "description": "文字やイラストをレイアウトして自分の好きな事や物などをわかりやすく伝える教材です。", "thumbnail": "/book-assets/pics/self-introduction.png", "order": 30}
   ]
 }
