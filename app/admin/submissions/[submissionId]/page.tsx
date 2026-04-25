@@ -1,5 +1,5 @@
 ﻿import Link from "next/link";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getAdminSession } from "@/lib/admin-auth";
 import AdminSubmissionDetailClient from "@/components/admin/AdminSubmissionDetailClient";
@@ -82,8 +82,15 @@ type SubmissionDetailData = {
 };
 
 async function fetchSubmissionDetail(submissionId: string) {
+  const headerStore = await headers();
+  const forwardedProto = headerStore.get("x-forwarded-proto");
+  const host = headerStore.get("x-forwarded-host") || headerStore.get("host");
+
   const baseUrl =
-    process.env.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000";
+    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+    (host
+      ? `${forwardedProto || "https"}://${host}`
+      : "http://localhost:3000");
 
   const cookieStore = await cookies();
   const cookieHeader = cookieStore
