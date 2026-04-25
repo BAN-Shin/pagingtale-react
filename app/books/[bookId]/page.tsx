@@ -13,6 +13,7 @@ type BookPageProps = {
   searchParams?: Promise<{
     page?: string;
     testId?: string;
+    from?: string;
   }>;
 };
 
@@ -74,16 +75,14 @@ export default async function BookDetailPage(props: BookPageProps) {
   );
   const isGuestViewer = !isStudentViewer && !isTeacherViewer;
 
+  const backHref =
+    searchParams.from === "admin" || isTeacherViewer ? "/admin/books" : "/books";
+
   return (
     <main className="relative h-screen w-full bg-white">
       <div className="fixed right-4 top-4 z-50 flex flex-wrap gap-2">
         <Link
-          href={
-            typeof window !== "undefined" &&
-            window.location.pathname.startsWith("/admin")
-              ? "/admin/books"
-              : "/books"
-          }
+          href={backHref}
           className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-md transition hover:bg-slate-100"
         >
           ← 教材一覧へ

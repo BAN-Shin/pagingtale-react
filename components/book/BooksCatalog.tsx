@@ -376,7 +376,10 @@ export default function BooksCatalog({
                 key={book.bookId}
                 className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow"
               >
-                <Link href={`/books/${book.bookId}`} className="block">
+                <Link
+                  href={adminMode ? `/books/${book.bookId}?from=admin` : `/books/${book.bookId}`}
+                  className="block"
+                >
                   {book.thumbnail ? (
                     <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100">
                       <Image
