@@ -2,6 +2,7 @@
 import { and, desc, eq, ilike, isNull, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
+  books,
   classes,
   studentScoreHistories,
   testResults,
@@ -77,6 +78,10 @@ export async function GET(req: NextRequest) {
 
     const filters = [];
 
+    if (adminSession.role !== "admin") {
+      filters.push(eq(books.ownerTeacherId, adminSession.teacherId));
+    }
+
     if (classIdParam) {
       const classId = Number(classIdParam);
 
@@ -151,6 +156,7 @@ export async function GET(req: NextRequest) {
         createdAt: testSubmissions.createdAt,
       })
       .from(testSubmissions)
+      .innerJoin(books, eq(testSubmissions.bookId, books.bookId))
       .leftJoin(classes, eq(testSubmissions.classId, classes.id))
       .leftJoin(testResults, eq(testResults.submissionId, testSubmissions.id))
       .leftJoin(
@@ -161,6 +167,7 @@ export async function GET(req: NextRequest) {
       .groupBy(
         testSubmissions.id,
         testSubmissions.bookId,
+        books.ownerTeacherId,
         testSubmissions.classId,
         classes.name,
         testSubmissions.testId,

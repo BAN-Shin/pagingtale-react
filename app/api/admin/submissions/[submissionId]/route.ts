@@ -2,6 +2,7 @@
 import { asc, desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import {
+  books,
   classes,
   studentScoreHistories,
   students,
@@ -67,6 +68,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
       .select({
         id: testSubmissions.id,
         bookId: testSubmissions.bookId,
+        ownerTeacherId: books.ownerTeacherId,
         classId: testSubmissions.classId,
         className: classes.name,
         testId: testSubmissions.testId,
@@ -81,6 +83,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
         createdAt: testSubmissions.createdAt,
       })
       .from(testSubmissions)
+      .innerJoin(books, eq(testSubmissions.bookId, books.bookId))
       .leftJoin(classes, eq(testSubmissions.classId, classes.id))
       .where(eq(testSubmissions.id, submissionId))
       .limit(1);
@@ -95,6 +98,20 @@ export async function GET(_req: NextRequest, context: RouteContext) {
         { status: 404 }
       );
     }
+  
+    if (
+      adminSession.role !== "admin" &&
+      submission.ownerTeacherId !== adminSession.teacherId
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "forbidden",
+          message: "この提出データを閲覧する権限がありません。",
+        },
+        { status: 403 }
+      );
+    }    
 
     const answersRows = await db
       .select({

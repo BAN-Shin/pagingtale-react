@@ -2,6 +2,7 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import {
+  books,
   studentScoreHistories,
   students,
   testResults,
@@ -159,6 +160,8 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const [submission] = await db
       .select({
         id: testSubmissions.id,
+        bookId: testSubmissions.bookId,
+        ownerTeacherId: books.ownerTeacherId,
         classId: testSubmissions.classId,
         testId: testSubmissions.testId,
         testTitle: testSubmissions.testTitle,
@@ -167,6 +170,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
         submittedAt: testSubmissions.submittedAt,
       })
       .from(testSubmissions)
+      .innerJoin(books, eq(testSubmissions.bookId, books.bookId))
       .where(eq(testSubmissions.id, submissionId))
       .limit(1);
 
@@ -180,6 +184,20 @@ export async function POST(req: NextRequest, context: RouteContext) {
         { status: 404 }
       );
     }
+
+    if (
+      adminSession.role !== "admin" &&
+      submission.ownerTeacherId !== adminSession.teacherId
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "forbidden",
+          message: "この提出データを採点する権限がありません。",
+        },
+        { status: 403 }
+      );
+    }    
 
     const existingAnswers = await db
       .select({
