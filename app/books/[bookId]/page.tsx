@@ -78,7 +78,12 @@ export default async function BookDetailPage(props: BookPageProps) {
     <main className="relative h-screen w-full bg-white">
       <div className="fixed right-4 top-4 z-50 flex flex-wrap gap-2">
         <Link
-          href={isTeacherViewer ? "/admin/books" : "/books"}
+          href={
+            typeof window !== "undefined" &&
+            window.location.pathname.startsWith("/admin")
+              ? "/admin/books"
+              : "/books"
+          }
           className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-md transition hover:bg-slate-100"
         >
           ← 教材一覧へ
