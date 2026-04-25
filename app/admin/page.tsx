@@ -113,6 +113,20 @@ export default async function AdminHomePage() {
         </section>
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {adminSession.role === "admin" ? (
+            <Link
+              href="/admin/teachers"
+              className="rounded-3xl border border-purple-200 bg-white p-6 shadow-sm transition hover:border-purple-300 hover:bg-purple-50/40"
+            >
+              <div className="space-y-2">
+                <div className="text-lg font-bold text-slate-900">教師管理</div>
+                <p className="text-sm leading-6 text-slate-600">
+                  教師アカウントの追加、確認、管理を行います。
+                </p>
+              </div>
+            </Link>
+          ) : null}
+
           <Link
             href="/admin/submissions"
             className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
