@@ -53,9 +53,16 @@ export default async function BookDetailPage(props: BookPageProps) {
   const initialPage = parseInitialPage(searchParams.page);
   const testId = normalizeTestId(searchParams.testId);
 
-  const bookRecord = await db.query.books.findFirst({
-    where: eq(books.bookId, bookId),
-  });
+  let bookRecord: typeof books.$inferSelect | null = null;
+
+  try {
+    bookRecord =
+      (await db.query.books.findFirst({
+        where: eq(books.bookId, bookId),
+      })) ?? null;
+  } catch (error) {
+    console.error("[BookDetailPage] failed to load book record:", error);
+  }
 
   const forcedMode = bookRecord?.mode === "test" ? "test" : "practice";
 
