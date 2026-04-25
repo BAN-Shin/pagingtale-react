@@ -1169,8 +1169,12 @@ export default function BookViewerWithQuiz({
   }, [timerSnapshot]);
 
   useEffect(() => {
+    if (!bookMeta) {
+      return;
+    }
+
     const initialFromMeta =
-      typeof bookMeta?.startPage === "number" &&
+      typeof bookMeta.startPage === "number" &&
       Number.isFinite(bookMeta.startPage) &&
       bookMeta.startPage > 0
         ? Math.floor(bookMeta.startPage)
@@ -1208,18 +1212,6 @@ export default function BookViewerWithQuiz({
   const answeredQuestionCount = currentQuestions.filter(
     (question) => answers[question.id]?.answeredAt
   ).length;
-
-  if (!bookMeta) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-[#f7f4ef] px-6 text-center">
-        <div className="rounded-3xl border border-slate-200 bg-white px-6 py-5 text-sm font-bold text-slate-700 shadow-sm">
-          {questionLoadError
-            ? `教材データの読み込みに失敗しました: ${questionLoadError}`
-            : "教材データを読み込んでいます..."}
-        </div>
-      </div>
-    );
-  }
 
   const questionToggleLabel =
     currentPageQuestionCount > 0
@@ -1479,6 +1471,18 @@ export default function BookViewerWithQuiz({
       setIsStudentInfoOpen(true);
     }
   }, [isStudentInfoPage]);
+
+  if (!bookMeta) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-[#f7f4ef] px-6 text-center">
+        <div className="rounded-3xl border border-slate-200 bg-white px-6 py-5 text-sm font-bold text-slate-700 shadow-sm">
+          {questionLoadError
+            ? `教材データの読み込みに失敗しました: ${questionLoadError}`
+            : "教材データを読み込んでいます..."}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-screen w-full bg-[#f7f4ef]">
