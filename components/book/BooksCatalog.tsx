@@ -228,26 +228,25 @@ export default function BooksCatalog({
 
         let nextBooks = normalizeBooks(manifestData);
 
-        if (teacherSession) {
-          const teacherResponse = await fetch("/api/teacher/books", {
-            cache: "no-store",
-          });
+        const metaApiUrl = teacherSession ? "/api/teacher/books" : "/api/books";
 
-          if (!teacherResponse.ok) {
-            throw new Error(
-              `/api/teacher/books の取得に失敗しました (${teacherResponse.status})`
-            );
-          }
+        const metaResponse = await fetch(metaApiUrl, {
+          cache: "no-store",
+        });
 
-          const teacherData =
-            (await teacherResponse.json()) as TeacherBooksResponse;
-
-          const teacherBooks = Array.isArray(teacherData.books)
-            ? teacherData.books
-            : [];
-
-          nextBooks = mergeBookMeta(nextBooks, teacherBooks);
+        if (!metaResponse.ok) {
+          throw new Error(
+            `${metaApiUrl} の取得に失敗しました (${metaResponse.status})`
+          );
         }
+
+        const metaData = (await metaResponse.json()) as TeacherBooksResponse;
+
+        const metaBooks = Array.isArray(metaData.books)
+          ? metaData.books
+          : [];
+
+        nextBooks = mergeBookMeta(nextBooks, metaBooks);
 
         if (!alive) return;
         setBooks(nextBooks);
