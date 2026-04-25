@@ -1209,6 +1209,18 @@ export default function BookViewerWithQuiz({
     (question) => answers[question.id]?.answeredAt
   ).length;
 
+  if (!bookMeta) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-[#f7f4ef] px-6 text-center">
+        <div className="rounded-3xl border border-slate-200 bg-white px-6 py-5 text-sm font-bold text-slate-700 shadow-sm">
+          {questionLoadError
+            ? `教材データの読み込みに失敗しました: ${questionLoadError}`
+            : "教材データを読み込んでいます..."}
+        </div>
+      </div>
+    );
+  }
+
   const questionToggleLabel =
     currentPageQuestionCount > 0
       ? `問題 ${answeredQuestionCount}/${currentPageQuestionCount}`
