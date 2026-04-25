@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>たったひとつの絵の描き方</title>
+<link rel="stylesheet" href="../css/style_page.css"></link>
+
+<style>
+body {
+    border: none;
+    overflow: hidden;
+}
+
+#mov_P006_K01 {
+    position: absolute;
+    left: 59.35px;
+    top: 84.79px;
+    width: 450.69px;
+    height: 639.02px;
+}
+
+/* 🔥 ボタンUI */
+.switch-buttons {
+    position: absolute;
+    left: 59.35px;
+    top: 740px;
+    display: flex;
+    gap: 10px;
+}
+
+.switch-buttons button {
+    width: 50px;
+    height: 40px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background: #444;
+    color: white;
+    cursor: pointer;
+}
+
+.switch-buttons button.active {
+    background: #2563eb;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- 🎬 動画 -->
+<video id="mov_P006_K01" controls>
+    <source id="videoSource" src="https://media.pagingtale.com/self-introduction/material/page_006/mov/sample-boy.mp4" type="video/mp4">
+</video>
+
+<!-- 🔘 切替ボタン -->
+<div class="switch-buttons">
+    <button id="btn01" class="active">01</button>
+    <button id="btn02">02</button>
+</div>
+
+<div class="footer">p006</div>
+
+<script>
+// 🎬 動画切替
+const video = document.getElementById("mov_P006_K01");
+const source = document.getElementById("videoSource");
+
+const btn01 = document.getElementById("btn01");
+const btn02 = document.getElementById("btn02");
+
+function switchVideo(src, activeBtn) {
+    video.pause();
+    source.src = src;
+    video.load();
+    video.play();
+
+    btn01.classList.remove("active");
+    btn02.classList.remove("active");
+    activeBtn.classList.add("active");
+}
+
+btn01.addEventListener("click", () => {
+    switchVideo(
+        "https://media.pagingtale.com/self-introduction/material/page_006/mov/sample-boy.mp4",
+        btn01
+    );
+});
+
+btn02.addEventListener("click", () => {
+    switchVideo(
+        "https://media.pagingtale.com/self-introduction/material/page_006/mov/sample-girl.mp4",
+        btn02
+    );
+});
+</script>
+
+</body>
+</html>
