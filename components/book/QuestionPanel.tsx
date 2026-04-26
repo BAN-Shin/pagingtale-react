@@ -35,6 +35,15 @@ function splitCorrectAnswers(value: string): string[] {
     .filter((item) => item.length > 0);
 }
 
+function normalizeSet(value: string): string {
+  return normalizeAnswerValue(value)
+    .split(":")
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0)
+    .sort()
+    .join(":");
+}
+
 function judgeAnswer(question: QuestionItem, value: string): AnswerResult {
   const input = normalizeAnswerValue(value);
   const answers = splitCorrectAnswers(question.correctAnswer ?? "");
@@ -56,7 +65,9 @@ function judgeAnswer(question: QuestionItem, value: string): AnswerResult {
       : "incorrect";
   }
 
-  return answers.includes(input) ? "correct" : "incorrect";
+  return answers.some((answer) => normalizeSet(answer) === normalizeSet(input))
+  ? "correct"
+  : "incorrect";return answers.includes(input) ? "correct" : "incorrect";
 }
 
 export default function QuestionPanel({
