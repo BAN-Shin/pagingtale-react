@@ -71,7 +71,7 @@ body{
 
         <video id="mov_P006_K01" controls>
             <source id="videoSource"
-                src="https://media.pagingtale.com/self-introduction/material/page_006/mov/one-drawing-way.mp4"
+                src="https://media.pagingtale.com/self-introduction/material/page_006/mov/one-drawing-way-v2.mp4"
                 type="video/mp4">
         </video>
 
@@ -94,10 +94,15 @@ const source = document.getElementById("videoSource");
 const buttons = document.querySelectorAll(".overlay-btn");
 
 function switchVideo(src, index) {
+    const wasPlaying = !video.paused;
+
     video.pause();
     source.src = src;
     video.load();
-    video.play();
+
+    if (wasPlaying) {
+        video.play();
+    }
 
     buttons.forEach(btn => btn.classList.remove("is-active"));
     buttons[index].classList.add("is-active");
@@ -106,7 +111,7 @@ function switchVideo(src, index) {
 // 🔥 新構成
 document.getElementById("btn01").onclick = () => {
     switchVideo(
-        "https://media.pagingtale.com/self-introduction/material/page_006/mov/one-drawing-way.mp4",
+        "https://media.pagingtale.com/self-introduction/material/page_006/mov/one-drawing-way-v2.mp4",
         0
     );
 };
