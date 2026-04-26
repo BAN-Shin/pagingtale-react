@@ -20,7 +20,11 @@ function normalizeText(value: string): string {
 }
 
 function normalizeAnswerValue(value: string): string {
-  return normalizeText(value).replace(/，/g, ",");
+  return normalizeText(value)
+    .replace(/，/g, ",")
+    .replace(/：/g, ":")   // 全角コロン統一
+    .replace(/\r?\n/g, "") // 改行削除
+    .trim();
 }
 
 function splitCorrectAnswers(value: string): string[] {
