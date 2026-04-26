@@ -39,6 +39,9 @@ function judgeAnswer(question: QuestionItem, value: string): AnswerResult {
   const input = normalizeAnswerValue(value);
   const answers = splitCorrectAnswers(question.correctAnswer ?? "");
 
+  console.log("入力:", input);
+  console.log("正解候補:", answers);
+
   if (!input) return "unanswered";
 
   if (answers.length === 0 || question.judgeMode === "none") {
