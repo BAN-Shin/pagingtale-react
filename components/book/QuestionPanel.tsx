@@ -20,6 +20,7 @@ function normalizeText(value: string): string {
 }
 
 function normalizeAnswerValue(value: string): string {
+  console.log("normalize called", value);
   return normalizeText(value)
     .replace(/，/g, ",")
     .replace(/：/g, ":")   // 全角コロン統一
