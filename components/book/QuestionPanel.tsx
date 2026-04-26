@@ -66,8 +66,8 @@ function judgeAnswer(question: QuestionItem, value: string): AnswerResult {
   }
 
   return answers.some((answer) => normalizeSet(answer) === normalizeSet(input))
-  ? "correct"
-  : "incorrect";return answers.includes(input) ? "correct" : "incorrect";
+    ? "correct"
+    : "incorrect";
 }
 
 export default function QuestionPanel({
