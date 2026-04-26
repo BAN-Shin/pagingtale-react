@@ -27,7 +27,7 @@ function normalizeAnswerValue(value: string): string {
     .replace(/\r?\n/g, "") // 改行削除
     .trim();
 }
-// debug
+
 function splitCorrectAnswers(value: string): string[] {
   return normalizeAnswerValue(value)
     .split(",")
