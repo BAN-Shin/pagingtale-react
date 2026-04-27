@@ -37,6 +37,7 @@ function normalizeTestId(value?: string): string | null {
 export default async function BookDetailPage(props: BookPageProps) {
   const params = await props.params;
   const searchParams = props.searchParams ? await props.searchParams : {};
+
   const studentSession = await getStudentSession();
   const adminSession = await getAdminSession();
 
@@ -52,11 +53,6 @@ export default async function BookDetailPage(props: BookPageProps) {
 
   let bookRecord: typeof books.$inferSelect | null = null;
 
-  // 👇 追加（bookが存在しない場合も弾く）
-  if (!bookRecord) {
-    notFound();
-  }  
-
   try {
     bookRecord =
       (await db.query.books.findFirst({
@@ -64,6 +60,10 @@ export default async function BookDetailPage(props: BookPageProps) {
       })) ?? null;
   } catch (error) {
     console.error("[BookDetailPage] failed to load book record:", error);
+  }
+
+  if (!bookRecord) {
+    notFound();
   }
 
   const isTeacherViewer = Boolean(
@@ -74,15 +74,11 @@ export default async function BookDetailPage(props: BookPageProps) {
   const isStudentViewer = Boolean(studentSession && !isTeacherViewer);
   const isGuestViewer = !isStudentViewer && !isTeacherViewer;
 
-  if (
-    !isTeacherViewer &&
-    bookRecord &&
-    bookRecord.mode === "dev"
-  ) {
+  if (bookRecord.mode === "dev" && !isTeacherViewer) {
     notFound();
   }
 
-  const forcedMode = bookRecord?.mode === "test" ? "test" : "practice";
+  const forcedMode = bookRecord.mode === "test" ? "test" : "practice";
 
   const backHref =
     searchParams.from === "admin" || isTeacherViewer ? "/admin/books" : "/books";
