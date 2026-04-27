@@ -52,6 +52,11 @@ export default async function BookDetailPage(props: BookPageProps) {
 
   let bookRecord: typeof books.$inferSelect | null = null;
 
+  // 👇 追加（bookが存在しない場合も弾く）
+  if (!bookRecord) {
+    notFound();
+  }  
+
   try {
     bookRecord =
       (await db.query.books.findFirst({
@@ -72,7 +77,7 @@ export default async function BookDetailPage(props: BookPageProps) {
   if (
     !isTeacherViewer &&
     bookRecord &&
-    (bookRecord.mode === "dev" || bookRecord.isPublished === false)
+    bookRecord.mode === "dev"
   ) {
     notFound();
   }
