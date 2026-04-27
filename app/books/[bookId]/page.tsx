@@ -61,12 +61,12 @@ export default async function BookDetailPage(props: BookPageProps) {
     console.error("[BookDetailPage] failed to load book record:", error);
   }
 
-  const isStudentViewer = Boolean(studentSession);
   const isTeacherViewer = Boolean(
     adminSession &&
-      !studentSession &&
       (adminSession.role === "teacher" || adminSession.role === "admin")
   );
+
+  const isStudentViewer = Boolean(studentSession && !isTeacherViewer);
   const isGuestViewer = !isStudentViewer && !isTeacherViewer;
 
   if (
