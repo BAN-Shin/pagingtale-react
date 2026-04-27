@@ -92,30 +92,46 @@ export default async function StudentResultDetailPage(props: PageProps) {
     .limit(1);
 
   if (!detail) {
-    notFound();
+    notFound(); // ← これで他人アクセス時は404になる
   }
 
-  const answers = await db
-    .select({
-      id: testSubmissionAnswers.id,
-      questionId: testSubmissionAnswers.questionId,
-      page: testSubmissionAnswers.page,
-      prompt: testSubmissionAnswers.prompt,
-      correctAnswer: testSubmissionAnswers.correctAnswer,
-      judgeMode: testSubmissionAnswers.judgeMode,
-      mark: testSubmissionAnswers.mark,
-      answer: testSubmissionAnswers.answer,
-      answeredAt: testSubmissionAnswers.answeredAt,
-      points: testSubmissionAnswers.points,
-      manualMark: testSubmissionAnswers.manualMark,
-      manualScore: testSubmissionAnswers.manualScore,
-      teacherComment: testSubmissionAnswers.teacherComment,
-      isManuallyGraded: testSubmissionAnswers.isManuallyGraded,
-      gradedAt: testSubmissionAnswers.gradedAt,
-    })
-    .from(testSubmissionAnswers)
-    .where(eq(testSubmissionAnswers.submissionId, submissionId))
-    .orderBy(asc(testSubmissionAnswers.page), asc(testSubmissionAnswers.id));
+  const answers = detail
+    ? await db
+        .select({
+          id: testSubmissionAnswers.id,
+          questionId: testSubmissionAnswers.questionId,
+          page: testSubmissionAnswers.page,
+          prompt: testSubmissionAnswers.prompt,
+          correctAnswer: testSubmissionAnswers.correctAnswer,
+          judgeMode: testSubmissionAnswers.judgeMode,
+          mark: testSubmissionAnswers.mark,
+          answer: testSubmissionAnswers.answer,
+          answeredAt: testSubmissionAnswers.answeredAt,
+          points: testSubmissionAnswers.points,
+          manualMark: testSubmissionAnswers.manualMark,
+          manualScore: testSubmissionAnswers.manualScore,
+          teacherComment: testSubmissionAnswers.teacherComment,
+          isManuallyGraded: testSubmissionAnswers.isManuallyGraded,
+          gradedAt: testSubmissionAnswers.gradedAt,
+        })
+        .from(testSubmissionAnswers)
+        .innerJoin(
+          testSubmissions,
+          eq(testSubmissionAnswers.submissionId, testSubmissions.id)
+        )
+        .where(
+          and(
+            eq(testSubmissionAnswers.submissionId, submissionId),
+            eq(testSubmissions.classId, session.classId),
+            eq(testSubmissions.studentNumber, session.studentNumber),
+            eq(testSubmissions.studentName, session.studentName)
+          )
+        )
+        .orderBy(
+          asc(testSubmissionAnswers.page),
+          asc(testSubmissionAnswers.id)
+        )
+    : [];
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
