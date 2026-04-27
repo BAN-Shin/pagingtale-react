@@ -1,4 +1,5 @@
 ﻿import Link from "next/link";
+import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { books } from "@/db/schema";
@@ -19,11 +20,7 @@ type BookPageProps = {
 
 function parseInitialPage(value?: string): number {
   const page = Number(value ?? "1");
-
-  if (!Number.isFinite(page)) {
-    return 1;
-  }
-
+  if (!Number.isFinite(page)) return 1;
   return Math.max(1, Math.floor(page));
 }
 
@@ -45,7 +42,6 @@ export default async function BookDetailPage(props: BookPageProps) {
 
   async function logoutStudent() {
     "use server";
-
     const { clearStudentSession } = await import("@/lib/student-auth");
     await clearStudentSession();
   }
@@ -65,8 +61,6 @@ export default async function BookDetailPage(props: BookPageProps) {
     console.error("[BookDetailPage] failed to load book record:", error);
   }
 
-  const forcedMode = bookRecord?.mode === "test" ? "test" : "practice";
-
   const isStudentViewer = Boolean(studentSession);
   const isTeacherViewer = Boolean(
     adminSession &&
@@ -74,6 +68,16 @@ export default async function BookDetailPage(props: BookPageProps) {
       (adminSession.role === "teacher" || adminSession.role === "admin")
   );
   const isGuestViewer = !isStudentViewer && !isTeacherViewer;
+
+  if (
+    !isTeacherViewer &&
+    bookRecord &&
+    (bookRecord.mode === "dev" || bookRecord.isPublished === false)
+  ) {
+    notFound();
+  }
+
+  const forcedMode = bookRecord?.mode === "test" ? "test" : "practice";
 
   const backHref =
     searchParams.from === "admin" || isTeacherViewer ? "/admin/books" : "/books";
