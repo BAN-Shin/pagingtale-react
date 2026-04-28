@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>たったひとつの絵の描き方</title>
+<title>自画像の描き方</title>
 <link rel="stylesheet" href="../css/style_page.css"></link>
 
 <style>
@@ -12,19 +12,16 @@ body{
 }
 
 :root {
-    --area-left: 59.35px;
-    --area-top: 84.79px;
-    --area-width: 450.69px;
-    --area-height: 639.02px;
     --button-color: #3F3631;
 }
 
 #mov_P006_mask_01 {
     position: absolute;
-    left: var(--area-left);
-    top: var(--area-top);
-    width: var(--area-width);
-    height: var(--area-height);
+    left: 50%;
+    top: 50%;
+    width: 80%;
+    height: 80%;
+    transform: translate(-50%, -50%);
 }
 
 .media-stage {
@@ -37,13 +34,21 @@ body{
     width: 100%;
     height: 100%;
     object-fit: contain;
+    display: block;
+}
+
+.overlay-image-bottom-right {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    width: 120px;
+    pointer-events: none;
 }
 
 .overlay-controls {
     position: absolute;
     left: 0;
     top: calc(100% + 10px);
-    width: 100%;
     display: flex;
     gap: 8px;
 }
@@ -77,7 +82,6 @@ body{
 
     </div>
 
-    <!-- 🔘 3ボタン -->
     <div class="overlay-controls">
         <button class="overlay-btn is-active" id="btn01">01</button>
         <button class="overlay-btn" id="btn02">02</button>
@@ -90,44 +94,27 @@ body{
 <script>
 const video = document.getElementById("mov_P006_K01");
 const source = document.getElementById("videoSource");
-
 const buttons = document.querySelectorAll(".overlay-btn");
 
 function switchVideo(src, index) {
-    const wasPlaying = !video.paused;
-
     video.pause();
     source.src = src;
-    video.load();
-
-    if (wasPlaying) {
-        video.play();
-    }
+    video.load(); // ←ここで止まる（再生しない）
 
     buttons.forEach(btn => btn.classList.remove("is-active"));
     buttons[index].classList.add("is-active");
 }
 
-// 🔥 新構成
 document.getElementById("btn01").onclick = () => {
-    switchVideo(
-        "https://media.pagingtale.com/self-introduction/material/page_006/mov/one-drawing-way-v2.mp4",
-        0
-    );
+    switchVideo("https://media.pagingtale.com/self-introduction/material/page_006/mov/one-drawing-way-v2.mp4", 0);
 };
 
 document.getElementById("btn02").onclick = () => {
-    switchVideo(
-        "https://media.pagingtale.com/self-introduction/material/page_006/mov/sample-boy.mp4",
-        1
-    );
+    switchVideo("https://media.pagingtale.com/self-introduction/material/page_006/mov/sample-boy.mp4", 1);
 };
 
 document.getElementById("btn03").onclick = () => {
-    switchVideo(
-        "https://media.pagingtale.com/self-introduction/material/page_006/mov/sample-girl.mp4",
-        2
-    );
+    switchVideo("https://media.pagingtale.com/self-introduction/material/page_006/mov/sample-girl.mp4", 2);
 };
 </script>
 
