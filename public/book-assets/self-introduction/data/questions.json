@@ -1,7 +1,21 @@
 ﻿{
   "bookId": "self-introduction",
-  "bookVersion": "2026/04/24 15:33:50",
+  "bookVersion": "2026/04/29 7:03:59",
   "questions": [
-
+    {
+      "id": "self-introduction_l003_p006_q001",
+      "bookId": "self-introduction",
+      "lessonId": "self-introduction_l003",
+      "page": 6,
+      "displayOrder": 1,
+      "prompt": "線を描くときに、始点から新たな点を打つために\n何を図ると良いでしょう。",
+      "placeholder": "例：○○と○○（2つ答えよう）",
+      "correctAnswer": "角度と長さ,長さと角度",
+      "judgeMode": "includes",
+      "explanation": "角度と長さ。\n\n始点から次の点を正しく決めるためには、\n「どの方向に進むか（角度）」と\n「どれくらい進むか（長さ）」を測ることが大切です。\n\nこの2つを意識して点を打つことで、\n形を正確にとることができるようになります。",
+      "points": 1,
+      "mode": "practice",
+      "tags": "絵の描き方"
+    }
   ]
 }
