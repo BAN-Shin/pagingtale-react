@@ -24,6 +24,14 @@ export const metadata: Metadata = {
   authors: [{ name: "PagingTale" }],
   creator: "PagingTale",
   metadataBase: new URL("https://pagingtale.vercel.app"),
+
+  // 👇 ★追加（favicon対策）
+  icons: {
+    icon: "/favicon.ico?v=2",
+    shortcut: "/favicon.ico?v=2",
+    apple: "/favicon.ico?v=2",
+  },
+
   openGraph: {
     title: "PagingTale",
     description:
