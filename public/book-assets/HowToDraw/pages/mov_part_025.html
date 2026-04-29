@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>坂道の消失点</title>
+    <link rel="stylesheet" href="../css/style_page.css"></link>
+    <style>
+        body {
+            margin: 0;
+            border: none;
+            overflow: hidden;
+            font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+            color: #ffffff;
+        }
+
+        #mov_P025_K01 {
+            position: absolute;
+            left: 59.35px;
+            top: 84.79px;
+            width: 450.69px;
+            height: 639.02px;
+        }
+
+        .note {
+            position: absolute;
+            width: 558px;
+            line-height: 1.4;
+            color: #ffffff;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+        }
+
+        .note h2 {
+            margin: 0 0 -5px 0;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+
+        .note p {
+            margin: 0 0 5px 0;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: pre-line;
+        }
+
+        .note-1 { top: 104px; left: 59.35px; }
+        .note-2 { top: 235px; left: 59.35px; }
+        .note-3 { top: 380px; left: 59.35px; }
+        .note-4 { top: 515px; left: 59.35px; }
+        .note-5 { top: 635px; left: 59.35px; }
+
+    </style>
+    <script src="../js/exe_script.js"></script>
+    <script>
+        var iframeId = "iframe9";
+        initializeMaskSizes(iframeId);
+    </script>
+</head>
+<body>
+
+<div class="note note-1">
+    <h2>坂道でも遠近法は同じ</h2>
+    <p>
+    平らな道だけでなく、坂道でも遠近法は同じです。
+    奥に向かう線は、すべて1つの点に集まります。
+
+    これが「消失点」です。
+    </p>
+</div>
+
+<div class="note note-2">
+    <h2>消失点は上にずれる</h2>
+    <p>
+    坂道をのぼっていくと、道の先は上に上がって見えます。
+    そのため、消失点は水平線よりも上に来ます。
+
+    これが坂道の特徴です。
+    </p>
+</div>
+
+<div class="note note-3">
+    <h2>道の広がり方に注目</h2>
+    <p>
+    道の両側の線は、遠くに行くほど近づいて見えます。
+    坂でも同じで、手前は広く、奥はせまくなります。
+
+    この形を意識すると、自然な遠近感が出ます。
+    </p>
+</div>
+
+<div class="note note-4">
+    <h2>水平線（アイレベル）との関係</h2>
+    <p>
+    水平線は目の高さです。
+
+    坂道の場合は、消失点がこの線より上に来ます。
+    下り坂なら逆に、消失点は下に来ます。
+    </p>
+</div>
+
+<div class="footer">p025</div>
+
+<script>
+(function () {
+    if (window.__pagingTaleArrowNavInserted) return;
+    window.__pagingTaleArrowNavInserted = true;
+
+    var arrowLock = false;
+    var lastArrowAt = 0;
+
+    function isEditableTargetForArrowKey(target) {
+        if (!target) return false;
+
+        var tagName = target.tagName ? target.tagName.toLowerCase() : "";
+
+        if (target.isContentEditable) return true;
+        if (tagName === "textarea") return true;
+        if (tagName === "select") return true;
+        if (tagName === "button") return true;
+
+        if (tagName === "input") {
+            var inputType = (target.type || "").toLowerCase();
+
+            if (
+                inputType === "text" ||
+                inputType === "search" ||
+                inputType === "url" ||
+                inputType === "tel" ||
+                inputType === "password" ||
+                inputType === "email" ||
+                inputType === "number" ||
+                inputType === ""
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    document.addEventListener("keydown", function (e) {
+        var key = e.key || "";
+        var keyCode = e.keyCode || 0;
+        var target = e.target;
+        var now = Date.now();
+
+        if (e.repeat) return;
+        if (arrowLock) return;
+        if (now - lastArrowAt < 400) return;
+        if (isEditableTargetForArrowKey(target)) return;
+
+        if (target && target.tagName && target.tagName.toLowerCase() === "video") {
+            return;
+        }
+
+        if (key === "ArrowLeft" || keyCode === 37) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "previous"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+
+        if (key === "ArrowRight" || keyCode === 39) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "next"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+    }, true);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>自然なパース</title>
+    <link rel="stylesheet" href="../css/style_page.css"></link>
+    <style>
+        body {
+            margin: 0;
+            border: none;
+            overflow: hidden;
+            font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+            color: #ffffff;
+        }
+
+        #mov_P027_K01 {
+            position: absolute;
+            left: 59.35px;
+            top: 84.79px;
+            width: 450.69px;
+            height: 639.02px;
+        }
+
+        .note {
+            position: absolute;
+            width: 558px;
+            line-height: 1.4;
+            color: #ffffff;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+        }
+
+        .note h2 {
+            margin: 0 0 -5px 0;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+
+        .note p {
+            margin: 0 0 5px 0;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: pre-line;
+        }
+
+        .note-1 { top: 104px; left: 59.35px; }
+        .note-2 { top: 235px; left: 59.35px; }
+        .note-3 { top: 380px; left: 59.35px; }
+        .note-4 { top: 515px; left: 59.35px; }
+        .note-5 { top: 635px; left: 59.35px; }
+
+    </style>
+    <script src="../js/exe_script.js"></script>
+    <script>
+        var iframeId = "iframe9";
+        initializeMaskSizes(iframeId);
+    </script>
+</head>
+<body>
+
+<div class="note note-1">
+    <h2>パースがきついとは？</h2>
+    <p>
+    箱をななめから見ると、奥に向かう線が強くしぼまって見えます。
+    このとき「パースがきつい」と言います。
+
+    近くと遠くの差が大きいほど、形は大きく変わって見えます。
+    </p>
+</div>
+
+<div class="note note-2">
+    <h2>2つの消失点がある</h2>
+    <p>
+    ななめ向きの箱は、左と右それぞれに向かう線があります。
+    それぞれの線は、別々の点に集まっていきます。
+
+    このように消失点が2つある見方を、
+    「2点透視」といいます。
+    </p>
+</div>
+
+<div class="note note-3">
+    <h2>消失点は画面の外にあることもある</h2>
+    <p>
+    消失点は、必ずしも画面の中に見えるとは限りません。
+    とても遠くにあると、画面の外にあることもあります。
+
+    でも線を伸ばせば、ちゃんとそこに集まっています。
+    </p>
+</div>
+
+<div class="note note-4">
+    <h2>水平線（アイレベル）を意識する</h2>
+    <p>
+    消失点は、目の高さの線の上にあります。
+    この線を「水平線（アイレベル）」といいます。
+
+    すべての奥行きの線は、この高さに向かって集まります。
+    </p>
+</div>
+
+<div class="footer">p027</div>
+
+<script>
+(function () {
+    if (window.__pagingTaleArrowNavInserted) return;
+    window.__pagingTaleArrowNavInserted = true;
+
+    var arrowLock = false;
+    var lastArrowAt = 0;
+
+    function isEditableTargetForArrowKey(target) {
+        if (!target) return false;
+
+        var tagName = target.tagName ? target.tagName.toLowerCase() : "";
+
+        if (target.isContentEditable) return true;
+        if (tagName === "textarea") return true;
+        if (tagName === "select") return true;
+        if (tagName === "button") return true;
+
+        if (tagName === "input") {
+            var inputType = (target.type || "").toLowerCase();
+
+            if (
+                inputType === "text" ||
+                inputType === "search" ||
+                inputType === "url" ||
+                inputType === "tel" ||
+                inputType === "password" ||
+                inputType === "email" ||
+                inputType === "number" ||
+                inputType === ""
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    document.addEventListener("keydown", function (e) {
+        var key = e.key || "";
+        var keyCode = e.keyCode || 0;
+        var target = e.target;
+        var now = Date.now();
+
+        if (e.repeat) return;
+        if (arrowLock) return;
+        if (now - lastArrowAt < 400) return;
+        if (isEditableTargetForArrowKey(target)) return;
+
+        if (target && target.tagName && target.tagName.toLowerCase() === "video") {
+            return;
+        }
+
+        if (key === "ArrowLeft" || keyCode === 37) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "previous"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+
+        if (key === "ArrowRight" || keyCode === 39) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "next"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+    }, true);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,216 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>自己紹介シートを作りましょう</title>
+    <link rel="stylesheet" href="../css/style_page.css"></link>
+    <style>
+        body {
+            margin: 0;
+            border: none;
+            overflow: hidden;
+            font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+            color: #ffffff;
+        }
+
+        #mov_P005_K01 {
+            position: absolute;
+            left: 59.35px;
+            top: 84.79px;
+            width: 450.69px;
+            height: 639.02px;
+        }
+
+        .notes-container {
+            position: absolute;
+            left: 40px;   /* ← 少し内側に寄せる */
+            top: 70px;    /* ← 上に少し余白をつくる */
+            width: 480px; /* ← 少し広げて読みやすく */
+
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            max-height: 650px;
+            overflow-y: auto;            
+        }
+
+        .note {
+            position: relative;
+            width: 100%;
+            line-height: 1.4;
+            color: #ffffff;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;            
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .note h2 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+
+        .note p {
+            margin: 0 0 5px 0;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: pre-line;
+        }
+    </style>
+    <script src="..\js\exe_script.js"></script>
+    <script>
+        var iframeId = "iframe9";
+        initializeMaskSizes(iframeId);
+    </script>
+</head>
+<body>
+
+<div class="notes-container">
+    <div class="note note-1">
+        <h2>自己紹介シートを作りましょう</h2>
+        <p>
+    自分のことを、写真やイラスト、文字を使って紹介するシートを作ります。
+
+    見た人に「自分らしさ」が伝わるように、
+    何を大きく見せるか、どこに配置するかを考えてみましょう。
+        </p>
+    </div>
+
+    <div class="note note-2">
+        <h2>掲載する内容の例</h2>
+        <p>
+    <span style="color:#FDEE00;">・名前</span>
+
+    <span style="color:#FDEE00;">・自画像</span>
+
+    <span style="color:#FDEE00;">・好きな食べ物</span>
+
+    <span style="color:#FDEE00;">・好きな作品（映画、本、音楽 など）</span>
+
+    <span style="color:#FDEE00;">・得意なこと</span>
+
+    <span style="color:#FDEE00;">・お気に入りのグッズ</span>
+
+    <span style="color:#FDEE00;">・ペット、または好きな動物</span>
+        </p>
+    </div>
+
+    <div class="note note-3">
+        <h2>伝えたいことを考えよう</h2>
+        <p>
+    例にある内容以外でも、
+    自分が伝えたいことがあれば<span style="color:#FDEE00;">自由に制作してOKです</span>。
+
+    まずは配布したシートにアイディア出しをしましょう。
+
+    「一番伝えたいこと」は何か、
+    それを伝えるために必要な写真・イラスト・文字は何かを考えてみましょう。
+        </p>
+    </div>
+</div>    
+
+
+<div class="footer">p005</div>
+
+<script>
+(function () {
+    if (window.__pagingTaleArrowNavInserted) return;
+    window.__pagingTaleArrowNavInserted = true;
+
+    var arrowLock = false;
+    var lastArrowAt = 0;
+
+    function isEditableTargetForArrowKey(target) {
+        if (!target) return false;
+
+        var tagName = target.tagName ? target.tagName.toLowerCase() : "";
+
+        if (target.isContentEditable) return true;
+        if (tagName === "textarea") return true;
+        if (tagName === "select") return true;
+        if (tagName === "button") return true;
+
+        if (tagName === "input") {
+            var inputType = (target.type || "").toLowerCase();
+
+            if (
+                inputType === "text" ||
+                inputType === "search" ||
+                inputType === "url" ||
+                inputType === "tel" ||
+                inputType === "password" ||
+                inputType === "email" ||
+                inputType === "number" ||
+                inputType === ""
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    document.addEventListener("keydown", function (e) {
+        var key = e.key || "";
+        var keyCode = e.keyCode || 0;
+        var target = e.target;
+        var now = Date.now();
+
+        if (e.repeat) return;
+        if (arrowLock) return;
+        if (now - lastArrowAt < 400) return;
+        if (isEditableTargetForArrowKey(target)) return;
+
+        if (target && target.tagName && target.tagName.toLowerCase() === "video") {
+            return;
+        }
+
+        if (key === "ArrowLeft" || keyCode === 37) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "previous"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+
+        if (key === "ArrowRight" || keyCode === 39) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "next"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+    }, true);
+})();
+</script>
+
+</body>
+</html>

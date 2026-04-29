@@ -1,0 +1,21 @@
+﻿{
+  "bookId": "HowToDraw",
+  "bookVersion": "2026/04/24 15:39:05",
+  "questions": [
+    {
+      "id": "howtodraw_l003_p004_q001",
+      "bookId": "HowToDraw",
+      "lessonId": "howtodraw_l003",
+      "page": 4,
+      "displayOrder": 1,
+      "prompt": "線を描くときに、始点から新たな点を打つために\n何を図ると良いでしょう。",
+      "placeholder": "平仮名のへを描く場合を考えてみましょう。",
+      "correctAnswer": "角度と長さ",
+      "judgeMode": "includes",
+      "explanation": "角度と長さ",
+      "points": 1,
+      "mode": "practice",
+      "tags": ""
+    }
+  ]
+}

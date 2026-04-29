@@ -1,0 +1,22 @@
+﻿{
+  "bookId": "HowToDraw",
+  "lessons": [
+    {
+      "lessonId": "howtodraw_l003",
+      "bookId": "HowToDraw",
+      "lessonNo": 3,
+      "lessonTitle": "絵の描き方と遠近法",
+      "theme": "絵の練習と知識",
+      "learningObjective": "形をとって絵を描くことができる。\n遠近用の基礎を理解し、描画できる。",
+      "startPage": 4,
+      "endPage": 31,
+      "difficulty": "normal",
+      "estimatedMinutes": 0,
+      "testId": "",
+      "publishPages": true,
+      "publishQuestions": true,
+      "description": "動画を視聴して絵の描き方や遠近法を学び、\n演習で形をとる訓練をする。",
+      "createdAt": "2026/04/11 6:46:21"
+    }
+  ]
+}

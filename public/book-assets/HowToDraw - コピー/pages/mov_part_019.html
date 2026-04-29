@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>犬</title>
+    <link rel="stylesheet" href="../css/style_page.css"></link>
+    <style>
+        body{
+            border:none;
+            overflow: hidden;
+        }
+
+        .frontLayer{
+            z-index: 1000;
+        }
+
+        /* #TitleSVG{
+            position: absolute;
+            top: 0px;
+        } */
+
+        .margin-adjustment {
+            margin: -9px;
+        }
+
+        /* #mov_P019_mask_01 {
+            position: absolute;
+            overflow: hidden;
+            width: 558px;
+            height: 820px;
+            -webkit-mask-image: url('../material/page_019/019_01_btn.svg');
+            mask-image: url('../material/page_019/019_01_btn.svg');
+        } */
+
+        #mov_P019_K01 {
+            position: absolute;
+            left: 59.35px;  /* マスクのX座標 */
+            top: 84.79px;   /* マスクのY座標 */
+            width: 450.69px;
+            height: 639.02px;
+        }
+    </style>
+    <script src="../js/exe_script.js"></script>
+    <script>
+        var iframeId = "iframe7"; // 例として固定のiframeIdを指定
+        initializeMaskSizes(iframeId);
+    </script>
+</head>
+<body style="overflow: hidden;">
+
+    <!-- Define mask -->
+
+    <div id="mov_P019_mask_01">
+        <img 
+            id="mov_P019_K01" 
+            class="video-element"
+            src="../material/page_019/mov/k01_p019.png" 
+        />
+    </div>
+
+    <!-- <svg width="558" height="820" style="position: absolute; top: 0; left: 0;">
+        <object type="image/svg+xml" data="../material/page_019/019_01_btn.svg" id="svgObject" width="558" height="820"></object>
+        <rect class="clickablePath" id="P019_K01" x="59.35" y="84.79"  width="450.69" height="639.02"/>
+    </svg> -->
+
+    <div class="footer">p019</div>
+
+<script>
+(function () {
+    if (window.__pagingTaleArrowNavInserted) return;
+    window.__pagingTaleArrowNavInserted = true;
+
+    var arrowLock = false;
+    var lastArrowAt = 0;
+
+    function isEditableTargetForArrowKey(target) {
+        if (!target) return false;
+
+        var tagName = target.tagName ? target.tagName.toLowerCase() : "";
+
+        if (target.isContentEditable) return true;
+        if (tagName === "textarea") return true;
+        if (tagName === "select") return true;
+        if (tagName === "button") return true;
+
+        if (tagName === "input") {
+            var inputType = (target.type || "").toLowerCase();
+
+            if (
+                inputType === "text" ||
+                inputType === "search" ||
+                inputType === "url" ||
+                inputType === "tel" ||
+                inputType === "password" ||
+                inputType === "email" ||
+                inputType === "number" ||
+                inputType === ""
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    document.addEventListener("keydown", function (e) {
+        var key = e.key || "";
+        var keyCode = e.keyCode || 0;
+        var target = e.target;
+        var now = Date.now();
+
+        if (e.repeat) return;
+        if (arrowLock) return;
+        if (now - lastArrowAt < 400) return;
+        if (isEditableTargetForArrowKey(target)) return;
+
+        if (target && target.tagName && target.tagName.toLowerCase() === "video") {
+            return;
+        }
+
+        if (key === "ArrowLeft" || keyCode === 37) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "previous"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+
+        if (key === "ArrowRight" || keyCode === 39) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "next"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+    }, true);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>マグカップ（演習）</title>
+    <link rel="stylesheet" href="../css/style_page.css"></link>
+    <style>
+        body {
+            margin: 0;
+            border: none;
+            overflow: hidden;
+            font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+            color: #ffffff;
+        }
+
+        #mov_P017_K01 {
+            position: absolute;
+            left: 59.35px;
+            top: 84.79px;
+            width: 80%;
+        }
+
+        .note {
+            position: absolute;
+            width: 558px;
+            line-height: 1.4;
+            color: #ffffff;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+        }
+
+        .note h2 {
+            margin: 0 0 -5px 0;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+
+        .note p {
+            margin: 0 0 5px 0;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: pre-line;
+        }
+
+        .note-1 { top: 100px; left: 59.35px; }
+        .note-2 { top: 300px; left: 59.35px; }
+        .note-3 { top: 520px; left: 59.35px; }
+
+    </style>
+    <script src="../js/exe_script.js"></script>
+    <script>
+        var iframeId = "iframe9";
+        initializeMaskSizes(iframeId);
+    </script>
+</head>
+<body>
+
+<div class="note note-1">
+    <h2>コップの形をとらえよう</h2>
+    <p>
+モチーフ（写真）と参考（スケッチ）を切り替えながら、
+コップの「全体の形」を見て描いてみましょう。
+
+コップは、上が広く下が少し細い形をしています。
+まずは細かく描かず、「外側のシルエット」を大きくとらえることが大切です。
+
+口の部分は「だ円（えん）」になっていることに注目しましょう。
+ここを正しく描くと、一気に立体らしく見えます。
+    </p>
+</div>
+
+<div class="note note-2">
+    <h2>位置とバランスを見よう</h2>
+    <p>
+次に、持ち手（取っ手）の位置と大きさを確認します。
+
+取っ手はコップの横についていて、
+上は口の近く、下は真ん中より少し下についています。
+丸い形ですが、完全な円ではなく少しつぶれた形です。
+また、コップの中心線を意識すると、
+左右のバランスが取りやすくなります。
+
+「どこに何があるか」を、位置でとらえることがポイントです。
+    </p>
+</div>
+
+<div class="note note-3">
+    <h2>立体感と影を表そう</h2>
+    <p>
+コップには光が当たって、明るいところと暗いところがあります。
+
+右側は少し暗く、左側は明るく見えます。
+この違いをやさしくぬることで、丸みが出てきます。
+また、底の部分には影ができています。
+机に落ちる影も描くことで、コップが「そこにある感じ」が出ます。
+
+ふち（口の厚み）や内側の影も少しずつ描き足していきましょう。
+
+最初は大きく形をとらえ、
+あとから細かい部分を整えるのがコツです！
+    </p>
+</div>
+
+<div class="footer">p017</div>
+
+<script>
+(function () {
+    if (window.__pagingTaleArrowNavInserted) return;
+    window.__pagingTaleArrowNavInserted = true;
+
+    var arrowLock = false;
+    var lastArrowAt = 0;
+
+    function isEditableTargetForArrowKey(target) {
+        if (!target) return false;
+
+        var tagName = target.tagName ? target.tagName.toLowerCase() : "";
+
+        if (target.isContentEditable) return true;
+        if (tagName === "textarea") return true;
+        if (tagName === "select") return true;
+        if (tagName === "button") return true;
+
+        if (tagName === "input") {
+            var inputType = (target.type || "").toLowerCase();
+
+            if (
+                inputType === "text" ||
+                inputType === "search" ||
+                inputType === "url" ||
+                inputType === "tel" ||
+                inputType === "password" ||
+                inputType === "email" ||
+                inputType === "number" ||
+                inputType === ""
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    document.addEventListener("keydown", function (e) {
+        var key = e.key || "";
+        var keyCode = e.keyCode || 0;
+        var target = e.target;
+        var now = Date.now();
+
+        if (e.repeat) return;
+        if (arrowLock) return;
+        if (now - lastArrowAt < 400) return;
+        if (isEditableTargetForArrowKey(target)) return;
+
+        if (target && target.tagName && target.tagName.toLowerCase() === "video") {
+            return;
+        }
+
+        if (key === "ArrowLeft" || keyCode === 37) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "previous"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+
+        if (key === "ArrowRight" || keyCode === 39) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "next"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+    }, true);
+})();
+</script>
+
+</body>
+</html>

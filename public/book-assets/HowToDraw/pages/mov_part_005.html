@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>たったひとつの絵の描き方</title>
+    <link rel="stylesheet" href="../css/style_page.css"></link>
+    <style>
+        body {
+            margin: 0;
+            border: none;
+            overflow: hidden;
+            font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+            color: #ffffff;
+        }
+
+
+        #mov_P005_K01 {
+            position: absolute;
+            left: 59.35px;
+            top: 84.79px;
+            width: 80%;
+        }
+
+        .note {
+            position: absolute;
+            width: 558px;
+            line-height: 1.4;
+            color: #ffffff;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+        }
+
+        .note h2 {
+            margin: 0 0 0 0;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+
+        .note p {
+            margin: 0 0 5px 0;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: pre-line;
+        }
+
+        .note-1 { top: 104px; left: 59.35px; }
+        .note-2 { top: 235px; left: 59.35px; }
+        .note-3 { top: 425px; left: 59.35px; }
+        .note-4 { top: 585px; left: 59.35px; }
+
+    </style>
+    <script src="..\js\exe_script.js"></script>
+    <script>
+        var iframeId = "iframe9";
+        initializeMaskSizes(iframeId);
+    </script>
+</head>
+<body>
+
+<div class="note note-1">
+    <h2>たったひとつの絵の描き方</h2>
+    <p>
+    平仮名の「へ」が書けるなら
+    絵を描くことができます。
+    そのポイントを紹介していきます。
+    </p>
+</div>
+
+<div class="note note-2">
+    <h2>平仮名の「へ」が書いてみよう</h2>
+    <p>
+    好きな位置に頂点を打ちます。
+
+    右上に向かって長さを考えて線を引きます。
+
+    線が終わる時に角度と長さが決まります。
+
+    次に上の点から右下に線を引くことで文字ができます。
+    </p>
+</div>
+
+<div class="note note-3">
+    <h2>絵に置き換える</h2>
+    <p>
+    林檎を描く場合にも頂点を打って、
+
+    角度と長さを考えて線を引きます。
+
+    「どこに向かっているか」を意識してつなげましょう。
+    </p>
+</div>
+
+<div class="note note-4">
+    <h2>形を整えると完成！</h2>
+    <p>
+    最後に、形を少し整えると、ちゃんとした絵になります。
+
+    最初はバラバラな線でも、つなげるだけで
+    立体っぽく見えてきます。
+
+    絵は「線→角度→つなぐ」これだけで描けます！
+    </p>
+</div>
+
+<div class="footer">p005</div>
+
+<script>
+(function () {
+    if (window.__pagingTaleArrowNavInserted) return;
+    window.__pagingTaleArrowNavInserted = true;
+
+    var arrowLock = false;
+    var lastArrowAt = 0;
+
+    function isEditableTargetForArrowKey(target) {
+        if (!target) return false;
+
+        var tagName = target.tagName ? target.tagName.toLowerCase() : "";
+
+        if (target.isContentEditable) return true;
+        if (tagName === "textarea") return true;
+        if (tagName === "select") return true;
+        if (tagName === "button") return true;
+
+        if (tagName === "input") {
+            var inputType = (target.type || "").toLowerCase();
+
+            if (
+                inputType === "text" ||
+                inputType === "search" ||
+                inputType === "url" ||
+                inputType === "tel" ||
+                inputType === "password" ||
+                inputType === "email" ||
+                inputType === "number" ||
+                inputType === ""
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    document.addEventListener("keydown", function (e) {
+        var key = e.key || "";
+        var keyCode = e.keyCode || 0;
+        var target = e.target;
+        var now = Date.now();
+
+        if (e.repeat) return;
+        if (arrowLock) return;
+        if (now - lastArrowAt < 400) return;
+        if (isEditableTargetForArrowKey(target)) return;
+
+        if (target && target.tagName && target.tagName.toLowerCase() === "video") {
+            return;
+        }
+
+        if (key === "ArrowLeft" || keyCode === 37) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "previous"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+
+        if (key === "ArrowRight" || keyCode === 39) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "next"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+    }, true);
+})();
+</script>
+
+</body>
+</html>

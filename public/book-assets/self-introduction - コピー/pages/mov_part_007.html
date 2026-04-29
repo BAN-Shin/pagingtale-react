@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>自画像の描き方</title>
+    <link rel="stylesheet" href="../css/style_page.css"></link>
+<style>
+    html,
+    body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        overflow: hidden;
+        font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+        color: #ffffff;
+    }
+
+    #mov_P007_K01 {
+        position: absolute;
+        left: 10%;
+        top: 10%;
+        width: 80%;
+        height: 80%;
+        object-fit: contain;
+    }
+
+    .notes-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+
+        overflow-y: auto;
+        box-sizing: border-box;
+
+        padding: 8% 35% 8% 7%; 
+        /* ↑ 左に余白（文章位置）
+        ↑ 右に余白（動画とのスペース） */
+
+        z-index: 10;
+    }
+
+    .note {
+        position: relative;
+        width: 100%;
+        line-height: 1.55;
+        color: #ffffff;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+    }
+
+    .note h2 {
+        margin: 0 0 12px 0;
+        font-size: clamp(14px, 2.1vw, 22px);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+    }
+
+    .note p {
+        margin: 0;
+        font-size: clamp(12px, 1.55vw, 18px);
+        font-weight: 500;
+        white-space: pre-line;
+    }
+
+    .note-1,
+    .note-2,
+    .note-3,
+    .note-4 {
+        top: auto;
+        left: auto;
+    }
+
+    .overlay-image-bottom-right {
+        position: absolute;
+        right: 4%;
+        bottom: 4%;
+        width: 60%;
+        max-width: 400px;
+        min-width: 300px;
+        height: auto;
+        pointer-events: none;
+        z-index: 20;
+    }
+
+    .notes-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .notes-container::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.45);
+        border-radius: 999px;
+    }
+
+    .notes-container::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.15);
+        border-radius: 999px;
+    }
+</style>
+    <script src="..\js\exe_script.js"></script>
+    <script>
+        var iframeId = "iframe9";
+        initializeMaskSizes(iframeId);
+    </script>
+</head>
+<body>
+
+<div class="notes-container">
+    <div class="note note-1">
+        <h2>自画像の描き方</h2>
+        <p>
+たったひとつの絵の描き方（01）を参考に
+点を打ってから描画します。
+
+ポートレイトの描き方（02,03）
+
+まずは、
+
+参考画像のポイントとなる
+点をトレースしていきます。
+
+ポイントとしては
+輪郭（耳・髪・耳・顎）
+眉毛・鼻・口・目
+輪郭（首・えり・肩）など
+
+いちばん大切なコトは
+点を打つとき
+始めの点から次の点への
+<span style="color:#FDEE00;">角度</span>と<span style="color:#FDEE00;">長さ</span>を測ることです
+
+毎日絵を描いて角度と長さを測る訓練をすると
+巧く絵を描けるようになります。
+
+点をつないでいって
+あたりが取れたら
+
+陰や色をトレースしていきます。
+
+陰や色もポイントとなる
+<span style="color:#FDEE00;">点を取ってつなぐだけ</span>です。
+
+あまり絵が得意でないひとは、
+<span style="color:#FDEE00;">リアルに描かなくても</span>
+輪郭（頭と首と肩）に
+目と鼻と口と耳と髪と襟を
+描くだけでも大丈夫です！
+
+        </p>
+    </div>
+</div>
+
+<img
+    class="overlay-image-bottom-right"
+    src="../material/page_007/mov/k01_p007.png"
+>
+
+<div class="footer">p007</div>
+
+<script>
+(function () {
+    if (window.__pagingTaleArrowNavInserted) return;
+    window.__pagingTaleArrowNavInserted = true;
+
+    var arrowLock = false;
+    var lastArrowAt = 0;
+
+    function isEditableTargetForArrowKey(target) {
+        if (!target) return false;
+
+        var tagName = target.tagName ? target.tagName.toLowerCase() : "";
+
+        if (target.isContentEditable) return true;
+        if (tagName === "textarea") return true;
+        if (tagName === "select") return true;
+        if (tagName === "button") return true;
+
+        if (tagName === "input") {
+            var inputType = (target.type || "").toLowerCase();
+
+            if (
+                inputType === "text" ||
+                inputType === "search" ||
+                inputType === "url" ||
+                inputType === "tel" ||
+                inputType === "password" ||
+                inputType === "email" ||
+                inputType === "number" ||
+                inputType === ""
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    document.addEventListener("keydown", function (e) {
+        var key = e.key || "";
+        var keyCode = e.keyCode || 0;
+        var target = e.target;
+        var now = Date.now();
+
+        if (e.repeat) return;
+        if (arrowLock) return;
+        if (now - lastArrowAt < 400) return;
+        if (isEditableTargetForArrowKey(target)) return;
+
+        if (target && target.tagName && target.tagName.toLowerCase() === "video") {
+            return;
+        }
+
+        if (key === "ArrowLeft" || keyCode === 37) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "previous"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+
+        if (key === "ArrowRight" || keyCode === 39) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            arrowLock = true;
+            lastArrowAt = now;
+
+            window.parent.postMessage({
+                type: "turnByArrow",
+                direction: "next"
+            }, "*");
+
+            setTimeout(function () {
+                arrowLock = false;
+            }, 450);
+
+            return;
+        }
+    }, true);
+})();
+</script>
+
+</body>
+</html>
